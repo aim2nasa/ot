@@ -2,7 +2,7 @@ CC      = $(CROSS_COMPILE)gcc
 
 OBJS = main.o
 
-CFLAGS += -Wall
+CFLAGS += -Wall -I$(TEEC_EXPORT)/include
 
 BINARY = hello
 

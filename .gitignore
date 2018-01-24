@@ -1,2 +1,9 @@
 *.o
+*.cmd
+*.d
+*.dmp
+*.elf
+*.lds
+*.map
+*.ta
 hello/host/hello

@@ -1,4 +1,5 @@
 #include <tee_internal_api.h>
+#include <hello_ta.h>
 
 TEE_Result TA_CreateEntryPoint(void)
 {
@@ -38,5 +39,11 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	(void)&param_types;
 	(void)&params;
 
-	return TEE_SUCCESS;
+	switch(cmd_id) {
+	case TA_HELLO_CMD:
+		IMSG("Hello CMD\n");
+		return TEE_SUCCESS;
+	default:
+		return TEE_ERROR_BAD_PARAMETERS;
+	}
 }

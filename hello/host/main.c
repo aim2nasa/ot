@@ -23,6 +23,12 @@ int main(int argc, char *argv[])
 		errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,err_origin);
 	printf("TEEC_OpenSession ok\n");
 
+	printf("Invoking TA...\n");
+	res = TEEC_InvokeCommand(&sess,TA_HELLO_CMD,NULL,&err_origin);
+	if(res!=TEEC_SUCCESS)
+		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
+	printf("TA Invoked\n");
+
 	printf("TEEC_FinalizeContext...\n");
 	TEEC_FinalizeContext(&ctx);
 	printf("TEEC_FinalizeContext ok\n");

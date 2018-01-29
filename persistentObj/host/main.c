@@ -7,12 +7,21 @@ int main(int argc, char *argv[])
 {
 	TEEC_Result res;
 	TEEC_Context ctx;
+	TEEC_Session sess;
+	TEEC_UUID uuid = TA_PERSISTENTOBJ_UUID;
+	uint32_t err_origin;
 
         printf("TEEC_InitializeContext...\n");
         res = TEEC_InitializeContext(NULL,&ctx);
         if(res!=TEEC_SUCCESS)
                 errx(1,"TEEC_InitializeContext failed with code 0x%x",res);
         printf("TEEC_InitializeContext ok\n");
+
+        printf("TEEC_OpenSession...\n");
+        res = TEEC_OpenSession(&ctx,&sess,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL,&err_origin);
+        if(res!=TEEC_SUCCESS)
+                errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,err_origin);
+        printf("TEEC_OpenSession ok\n");
 
         printf("TEEC_FinalizeContext...\n");
         TEEC_FinalizeContext(&ctx);

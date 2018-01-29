@@ -7,3 +7,4 @@
 *.map
 *.ta
 hello/host/hello
+persistentObj/host/persistentObj

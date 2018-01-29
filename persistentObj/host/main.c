@@ -1,6 +1,7 @@
 #include <err.h>
 #include <stdio.h>
 #include <tee_client_api.h>
+#include <persistentObj_ta.h>
 
 int main(int argc, char *argv[])
 {

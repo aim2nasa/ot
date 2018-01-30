@@ -40,6 +40,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	(void)&params;
 
 	switch(cmd_id) {
+	case TA_PERSISTENTOBJ_CMD_CREATE:
+		IMSG("PersistentObj Create command");
+		return TEE_SUCCESS;
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}

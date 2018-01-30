@@ -3,6 +3,14 @@
 #include <tee_client_api.h>
 #include <persistentObj_ta.h>
 
+static TEEC_Result fs_create(TEEC_Session *sess,void *id,uint32_t id_size,
+			    uint32_t flags, uint32_t attr, void *data,
+			    uint32_t data_size, uint32_t *obj,
+			    uint32_t storage_id)
+{
+	return TEEC_ERROR_GENERIC;
+}
+
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;

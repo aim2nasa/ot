@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 		0,data,sizeof(data),&obj,storage_id);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_create failed with code 0x%x",res);
-        printf("Created in TA\n");
+        printf("Created in TA, obj=0x%x\n",obj);
 
         printf("TEEC_FinalizeContext...\n");
         TEEC_FinalizeContext(&ctx);

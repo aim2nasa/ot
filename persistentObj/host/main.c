@@ -1,6 +1,7 @@
 #include <err.h>
 #include <stdio.h>
 #include <tee_client_api.h>
+#include <tee_api_defines.h>
 #include <persistentObj_ta.h>
 
 static TEEC_Result fs_create(TEEC_Session *sess,void *id,uint32_t id_size,
@@ -33,6 +34,9 @@ static TEEC_Result fs_create(TEEC_Session *sess,void *id,uint32_t id_size,
         return res;
 }
 
+static uint8_t objectID[] = { 0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07 };
+static uint8_t data[] = { 0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x1a,0x1b };
+
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
@@ -40,6 +44,8 @@ int main(int argc, char *argv[])
 	TEEC_Session sess;
 	TEEC_UUID uuid = TA_PERSISTENTOBJ_UUID;
 	uint32_t err_origin;
+	uint32_t obj;
+	uint32_t storage_id = TEE_STORAGE_PRIVATE;
 
         printf("TEEC_InitializeContext...\n");
         res = TEEC_InitializeContext(NULL,&ctx);
@@ -53,11 +59,14 @@ int main(int argc, char *argv[])
                 errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,err_origin);
         printf("TEEC_OpenSession ok\n");
 
-        printf("Invoking TA...\n");
-        res = TEEC_InvokeCommand(&sess,TA_PERSISTENTOBJ_CMD_CREATE,NULL,&err_origin);
+        printf("Creating in TA...\n");
+	res = fs_create(&sess,objectID,sizeof(objectID),
+		TEE_DATA_FLAG_ACCESS_WRITE|
+		TEE_DATA_FLAG_ACCESS_WRITE_META,
+		0,data,sizeof(data),&obj,storage_id);
         if(res!=TEEC_SUCCESS)
-                errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
-        printf("TA Invoked\n");
+                errx(1,"fs_create failed with code 0x%x",res);
+        printf("Created in TA\n");
 
         printf("TEEC_FinalizeContext...\n");
         TEEC_FinalizeContext(&ctx);

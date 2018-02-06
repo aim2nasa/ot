@@ -80,6 +80,12 @@ int main(int argc, char *argv[])
                 errx(1,"fs_create failed with code 0x%x",res);
         printf("Created in TA, obj=0x%x\n",obj);
 
+        printf("Unlink...\n");
+	res = fs_unlink(&sess,obj);
+        if(res!=TEEC_SUCCESS)
+                errx(1,"fs_unlink failed with code 0x%x",res);
+        printf("Unlink done\n");
+
         printf("TEEC_FinalizeContext...\n");
         TEEC_FinalizeContext(&ctx);
         printf("TEEC_FinalizeContext ok\n");

@@ -34,6 +34,18 @@ static TEEC_Result fs_create(TEEC_Session *sess,void *id,uint32_t id_size,
         return res;
 }
 
+static TEEC_Result fs_unlink(TEEC_Session *sess, uint32_t obj)
+{
+	TEEC_Operation op = {0};
+	uint32_t org;
+
+	op.params[0].value.a = obj;
+
+        op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT, TEEC_NONE,
+                                         TEEC_NONE, TEEC_NONE);
+	return TEEC_InvokeCommand(sess,TA_PERSISTENTOBJ_CMD_UNLINK, &op, &org);
+}
+
 static uint8_t objectID[] = { 0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07 };
 static uint8_t data[] = { 0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x1a,0x1b };
 

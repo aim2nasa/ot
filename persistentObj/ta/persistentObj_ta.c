@@ -54,6 +54,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	case TA_PERSISTENTOBJ_CMD_CREATE:
 		IMSG("PersistentObj Create command received");
                 return ta_storage_cmd_create(param_types,params);
+	case TA_PERSISTENTOBJ_CMD_UNLINK:
+		IMSG("PersistentObj Unlink command received");
+                return ta_storage_cmd_unlink(param_types,params);
 
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;

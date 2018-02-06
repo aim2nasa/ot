@@ -7,7 +7,10 @@ do { \
                 return TEE_ERROR_BAD_PARAMETERS; \
 } while (0)
 
+#define VAL2HANDLE(v) (void *)(uintptr_t)(v)
+
 TEE_Result ta_storage_cmd_create(uint32_t param_types, TEE_Param params[4]);
+TEE_Result ta_storage_cmd_unlink(uint32_t param_types, TEE_Param params[4]);
 
 TEE_Result TA_CreateEntryPoint(void)
 {
@@ -76,4 +79,17 @@ TEE_Result ta_storage_cmd_create(uint32_t param_types, TEE_Param params[4])
                  params[3].memref.buffer, params[3].memref.size, &o);
         params[1].value.b = (uintptr_t)o;
         return res;
+}
+
+TEE_Result ta_storage_cmd_unlink(uint32_t param_types, TEE_Param params[4])
+{
+	TEE_ObjectHandle o = VAL2HANDLE(params[0].value.a);
+
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE,
+			   TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE));
+
+	TEE_CloseAndDeletePersistentObject1(o);
+
+	return TEE_SUCCESS;
 }

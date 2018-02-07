@@ -7,7 +7,6 @@
 static uint8_t objectID[] = { 0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
 			      0x08,0x09,0x10,0x11,0x12,0x13,0x14,0x15 };
 static uint8_t data[] = { 0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x1a,0x1b };
-static uint8_t file[] = { 0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18 };
 
 int main(int argc, char *argv[])
 {
@@ -47,7 +46,7 @@ int main(int argc, char *argv[])
         printf("Closed\n");
 
         printf("Opening...\n");
-	res = fs_open(&sess,file,sizeof(file),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
+	res = fs_open(&sess,objectID,sizeof(objectID),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_open failed with code 0x%x",res);
         printf("Opened\n");
@@ -59,7 +58,7 @@ int main(int argc, char *argv[])
         printf("Closed\n");
 
         printf("Opening...\n");
-	res = fs_open(&sess,file,sizeof(file),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
+	res = fs_open(&sess,objectID,sizeof(objectID),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_open failed with code 0x%x",res);
         printf("Opened\n");

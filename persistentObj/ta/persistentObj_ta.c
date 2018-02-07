@@ -11,6 +11,8 @@ do { \
 
 TEE_Result ta_storage_cmd_create(uint32_t param_types, TEE_Param params[4]);
 TEE_Result ta_storage_cmd_unlink(uint32_t param_types, TEE_Param params[4]);
+TEE_Result ta_storage_cmd_open(uint32_t param_types, TEE_Param params[4]);
+TEE_Result ta_storage_cmd_close(uint32_t param_types, TEE_Param params[4]);
 
 TEE_Result TA_CreateEntryPoint(void)
 {
@@ -57,6 +59,12 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	case TA_PERSISTENTOBJ_CMD_UNLINK:
 		IMSG("PersistentObj Unlink command received");
                 return ta_storage_cmd_unlink(param_types,params);
+	case TA_PERSISTENTOBJ_CMD_OPEN:
+		IMSG("PersistentObj Open command received");
+                return ta_storage_cmd_open(param_types,params);
+	case TA_PERSISTENTOBJ_CMD_CLOSE:
+		IMSG("PersistentObj Close command received");
+                return ta_storage_cmd_close(param_types,params);
 
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
@@ -93,6 +101,37 @@ TEE_Result ta_storage_cmd_unlink(uint32_t param_types, TEE_Param params[4])
 			   TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE));
 
 	TEE_CloseAndDeletePersistentObject1(o);
+
+	return TEE_SUCCESS;
+}
+
+TEE_Result ta_storage_cmd_open(uint32_t param_types, TEE_Param params[4])
+{
+	TEE_Result res;
+	TEE_ObjectHandle o;
+
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_MEMREF_INPUT,
+			   TEE_PARAM_TYPE_VALUE_INOUT,
+			   TEE_PARAM_TYPE_VALUE_INPUT,
+			   TEE_PARAM_TYPE_NONE));
+
+	res = TEE_OpenPersistentObject(params[2].value.a,
+					params[0].memref.buffer,
+					params[0].memref.size,
+					params[1].value.a, &o);
+
+	params[1].value.b = (uintptr_t)o;
+	return res;
+}
+
+TEE_Result ta_storage_cmd_close(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE,
+			   TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE));
+
+	TEE_CloseObject((TEE_ObjectHandle)(uintptr_t)params[0].value.a);
 
 	return TEE_SUCCESS;
 }

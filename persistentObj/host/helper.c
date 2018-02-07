@@ -67,3 +67,16 @@ TEEC_Result fs_open(TEEC_Session *sess, void *id, uint32_t id_size,
 
 	return res;
 }
+
+TEEC_Result fs_close(TEEC_Session *sess, uint32_t obj)
+{
+	TEEC_Operation op = {0};
+	uint32_t org;
+
+	op.params[0].value.a = obj;
+
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT, TEEC_NONE,
+					 TEEC_NONE, TEEC_NONE);
+
+	return TEEC_InvokeCommand(sess, TA_PERSISTENTOBJ_CMD_CLOSE, &op, &org);
+}

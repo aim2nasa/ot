@@ -9,6 +9,7 @@
                 { 0xba, 0x89, 0x0e, 0xd5, 0xf8, 0x9f, 0x71, 0x8b} }
 
 #define TA_PERSISTENTOBJ_CMD_OPEN	0
+#define TA_PERSISTENTOBJ_CMD_CLOSE	1
 #define TA_PERSISTENTOBJ_CMD_CREATE	4
 #define TA_PERSISTENTOBJ_CMD_UNLINK	6
 

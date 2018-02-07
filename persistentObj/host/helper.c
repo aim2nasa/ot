@@ -1,12 +1,14 @@
 #include "helper.h"
 #include <persistentObj_ta.h>
 
+#define TEEC_OPERATION_INITIALIZER { 0 }
+
 TEEC_Result fs_create(TEEC_Session *sess,void *id,uint32_t id_size,
    		      uint32_t flags, uint32_t attr, void *data,
 		      uint32_t data_size, uint32_t *obj,
 		      uint32_t storage_id)
 {
-        TEEC_Operation op = {0};
+        TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
         TEEC_Result res;
         uint32_t org;
 
@@ -33,7 +35,7 @@ TEEC_Result fs_create(TEEC_Session *sess,void *id,uint32_t id_size,
 
 TEEC_Result fs_unlink(TEEC_Session *sess, uint32_t obj)
 {
-	TEEC_Operation op = {0};
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint32_t org;
 
 	op.params[0].value.a = obj;
@@ -46,7 +48,7 @@ TEEC_Result fs_unlink(TEEC_Session *sess, uint32_t obj)
 TEEC_Result fs_open(TEEC_Session *sess, void *id, uint32_t id_size,
 	 	    uint32_t flags, uint32_t *obj, uint32_t storage_id)
 {
-	TEEC_Operation op = {0};
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	TEEC_Result res;
 	uint32_t org;
 
@@ -70,7 +72,7 @@ TEEC_Result fs_open(TEEC_Session *sess, void *id, uint32_t id_size,
 
 TEEC_Result fs_close(TEEC_Session *sess, uint32_t obj)
 {
-	TEEC_Operation op = {0};
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint32_t org;
 
 	op.params[0].value.a = obj;

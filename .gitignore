@@ -8,3 +8,5 @@
 *.ta
 hello/host/hello
 persistentObj/host/persistentObj
+storage/host/perObj/perObj
+storage/host/enumFiles/enumFiles

@@ -38,12 +38,21 @@ int main(int argc, char *argv[])
         printf("Creating in TA...\n");
 	for(i=0;i<MAX_FILES;i++) {
 		res = fs_create(&sess,files[i],sizeof(file_00),
-			TEE_DATA_FLAG_ACCESS_WRITE,
+			TEE_DATA_FLAG_ACCESS_WRITE|
+			TEE_DATA_FLAG_ACCESS_WRITE_META,
 			0,data,sizeof(data),&obj[i],storage_id);
         	if(res!=TEEC_SUCCESS)
                 	errx(1,"fs_create failed with code 0x%x",res);
 
         	printf("Created in TA, obj[%d]=0x%x\n",i,obj[i]);
+	}
+
+        printf("Unlinking...\n");
+	for(i=0;i<MAX_FILES;i++) {
+		res = fs_unlink(&sess,obj[i]);
+        	if(res!=TEEC_SUCCESS)
+                	errx(1,"fs_unlink[%d] failed with code 0x%x",i,res);
+        	printf("Unlink[%d]\n",i);
 	}
 
         printf("TEEC_FinalizeContext...\n");

@@ -18,10 +18,12 @@ int main(int argc, char *argv[])
 	TEEC_Context ctx;
 	TEEC_Session sess;
 	TEEC_UUID uuid = TA_STORAGE_UUID;
-	uint32_t err_origin;
+	uint32_t err_origin,e=0;
 	uint32_t obj[MAX_FILES];
 	uint32_t storage_id = TEE_STORAGE_PRIVATE;
 	int i;
+	uint8_t info[200];
+	uint8_t id[200];
 
         printf("TEEC_InitializeContext...\n");
         res = TEEC_InitializeContext(NULL,&ctx);
@@ -46,6 +48,24 @@ int main(int argc, char *argv[])
 
         	printf("Created in TA, obj[%d]=0x%x\n",i,obj[i]);
 	}
+
+	res = fs_alloc_enum(&sess,&e);
+        if(res!=TEEC_SUCCESS)
+                errx(1,"fs_alloc_enum failed with code 0x%x",res);
+	printf("enum handle 0x%x\n",e);
+
+	res = fs_start_enum(&sess,e,storage_id);
+        if(res!=TEEC_SUCCESS)
+                errx(1,"fs_start_enum failed with code 0x%x",res);
+
+	i=0;
+	while(TEEC_SUCCESS==fs_next_enum(&sess,e,info,sizeof(info),id,sizeof(id))){
+		printf("enum loop:%d\n",i++);
+	}
+
+	res = fs_free_enum(&sess,e);
+        if(res!=TEEC_SUCCESS)
+                errx(1,"fs_free_enum failed with code 0x%x",res);
 
         printf("Unlinking...\n");
 	for(i=0;i<MAX_FILES;i++) {

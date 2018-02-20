@@ -1,4 +1,5 @@
 #include <tee_client_api.h>
+#define DEBUG_FS
 
 TEEC_Result fs_open(TEEC_Session *sess, void *id, uint32_t id_size,
 		    uint32_t flags, uint32_t *obj, uint32_t storage_id);

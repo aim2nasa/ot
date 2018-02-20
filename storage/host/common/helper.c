@@ -1,5 +1,6 @@
 #include "helper.h"
 #include <ta_storage.h>
+#include <stdio.h>
 
 #define TEEC_OPERATION_INITIALIZER { 0 }
 
@@ -270,7 +271,15 @@ TEEC_Result fs_next_enum(TEEC_Session *sess, uint32_t e, void *obj_info,
 	op.params[2].tmpref.buffer = id;
 	op.params[2].tmpref.size = id_size;
 
-	return TEEC_InvokeCommand(sess, TA_STORAGE_CMD_NEXT_ENUM, &op, &org);
+#ifdef DEBUG_FS
+	printf("before op.params[2].tmpref.size=%zd \n",op.params[2].tmpref.size);
+#endif
+	TEEC_Result res = TEEC_InvokeCommand(sess, TA_STORAGE_CMD_NEXT_ENUM, &op, &org);
+
+#ifdef DEBUG_FS
+	printf("after op.params[2].tmpref.size=%zd, res=%x\n",op.params[2].tmpref.size,res);
+#endif
+	return res;
 }
 
 TEEC_Result fs_restrict_usage(TEEC_Session *sess, uint32_t obj,

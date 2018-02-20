@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
 	uint32_t err_origin,e=0;
 	uint32_t obj[MAX_FILES];
 	uint32_t storage_id = TEE_STORAGE_PRIVATE;
-	uint32_t infoSize,idSize;
+	size_t infoSize;
+	uint32_t idSize;
 	int i,j;
 	uint8_t info[200];
 	uint8_t id[200];
@@ -65,8 +66,8 @@ int main(int argc, char *argv[])
 	memset((void*)id,0,sizeof(id));
 	infoSize = sizeof(info);
 	idSize = sizeof(id);
-	while(TEEC_SUCCESS==fs_next_enum(&sess,e,info,infoSize,id,idSize)){
-		printf("enum loop:%d, infoSize:%u,idSize:%u\n",i++,infoSize,idSize);
+	while(TEEC_SUCCESS==fs_next_enum(&sess,e,info,&infoSize,id,&idSize)){
+		printf("enum loop:%d, infoSize:%zd,idSize:%u \n",i++,infoSize,idSize);
 		printf(" id:"); 
 		for(j=0;j<sizeof(file_00);j++) {
 			printf("%x",id[j]); 
@@ -76,6 +77,9 @@ int main(int argc, char *argv[])
 			printf("%x",info[j]); 
 		}
 		printf("\n"); 
+
+		infoSize = sizeof(info);
+		idSize = sizeof(id);
 	}
 
 	res = fs_free_enum(&sess,e);

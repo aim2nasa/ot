@@ -255,7 +255,7 @@ TEEC_Result fs_start_enum(TEEC_Session *sess, uint32_t e,
 }
 
 TEEC_Result fs_next_enum(TEEC_Session *sess, uint32_t e, void *obj_info,
-			 size_t info_size, void *id, uint32_t id_size)
+			 size_t *info_size, void *id, uint32_t *id_size)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint32_t org;
@@ -267,14 +267,16 @@ TEEC_Result fs_next_enum(TEEC_Session *sess, uint32_t e, void *obj_info,
 
 	op.params[0].value.a = e;
 	op.params[1].tmpref.buffer = obj_info;
-	op.params[1].tmpref.size = info_size;
+	op.params[1].tmpref.size = *info_size;
 	op.params[2].tmpref.buffer = id;
-	op.params[2].tmpref.size = id_size;
+	op.params[2].tmpref.size = *id_size;
 
 #ifdef DEBUG_FS
 	printf("before op.params[2].tmpref.size=%zd \n",op.params[2].tmpref.size);
 #endif
 	TEEC_Result res = TEEC_InvokeCommand(sess, TA_STORAGE_CMD_NEXT_ENUM, &op, &org);
+	*info_size = op.params[1].tmpref.size;
+	*id_size = op.params[2].tmpref.size;
 
 #ifdef DEBUG_FS
 	printf("after op.params[2].tmpref.size=%zd, res=%x\n",op.params[2].tmpref.size,res);

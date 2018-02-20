@@ -40,7 +40,7 @@ TEEC_Result fs_start_enum(TEEC_Session *sess, uint32_t e,
 			  uint32_t storage_id);
 
 TEEC_Result fs_next_enum(TEEC_Session *sess, uint32_t e, void *obj_info,
-			 size_t info_size, void *id, uint32_t id_size);
+			 size_t *info_size, void *id, uint32_t *id_size);
 
 TEEC_Result fs_restrict_usage(TEEC_Session *sess, uint32_t obj,
 			      uint32_t obj_usage);

@@ -3,12 +3,13 @@
 #include <tee_api_defines.h>
 #include <ta_storage.h>
 #include "helper.h"
+#include <string.h>
 
 #define MAX_FILES 3
 
-static uint8_t file_00[] = { 0x00,0x00 };
-static uint8_t file_01[] = { 0x01,0x00 };
-static uint8_t file_02[] = { 0x02,0x00 };
+static uint8_t file_00[] = { 0x01,0x02 };
+static uint8_t file_01[] = { 0x03,0x04 };
+static uint8_t file_02[] = { 0x05,0x06 };
 static uint8_t* files[]={ file_00,file_01,file_02 };
 static uint8_t data[] = { 0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x1a,0x1b };
 
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
 	uint32_t err_origin,e=0;
 	uint32_t obj[MAX_FILES];
 	uint32_t storage_id = TEE_STORAGE_PRIVATE;
-	int i;
+	int i,j;
 	uint8_t info[200];
 	uint8_t id[200];
 
@@ -59,8 +60,19 @@ int main(int argc, char *argv[])
                 errx(1,"fs_start_enum failed with code 0x%x",res);
 
 	i=0;
+	memset((void*)info,0,sizeof(info));
+	memset((void*)id,0,sizeof(id));
 	while(TEEC_SUCCESS==fs_next_enum(&sess,e,info,sizeof(info),id,sizeof(id))){
 		printf("enum loop:%d\n",i++);
+		printf(" id:"); 
+		for(j=0;j<sizeof(file_00);j++) {
+			printf("%x",id[j]); 
+		}
+		printf("\n info:"); 
+		for(j=0;j<sizeof(info);j++) {
+			printf("%x",info[j]); 
+		}
+		printf("\n"); 
 	}
 
 	res = fs_free_enum(&sess,e);

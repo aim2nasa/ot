@@ -69,11 +69,11 @@ int main(int argc, char *argv[])
 	while(TEEC_SUCCESS==fs_next_enum(&sess,e,info,&infoSize,id,&idSize)){
 		printf("enum loop:%d, infoSize:%zd,idSize:%u \n",i++,infoSize,idSize);
 		printf(" id:"); 
-		for(j=0;j<sizeof(file_00);j++) {
+		for(j=0;j<idSize;j++) {
 			printf("%x",id[j]); 
 		}
 		printf("\n info:"); 
-		for(j=0;j<sizeof(info);j++) {
+		for(j=0;j<infoSize;j++) {
 			printf("%x",info[j]); 
 		}
 		printf("\n"); 

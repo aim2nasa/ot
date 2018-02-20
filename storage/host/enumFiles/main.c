@@ -7,10 +7,7 @@
 
 #define MAX_FILES 3
 
-static uint8_t file_00[] = { 0x01,0x02 };
-static uint8_t file_01[] = { 0x03,0x04 };
-static uint8_t file_02[] = { 0x05,0x06 };
-static uint8_t* files[]={ file_00,file_01,file_02 };
+static uint8_t files[][2]={ { 0x01,0x02 },{ 0x03,0x04 },{ 0x05,0x06 } };
 static uint8_t data[] = { 0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x1a,0x1b };
 
 int main(int argc, char *argv[])
@@ -42,7 +39,7 @@ int main(int argc, char *argv[])
 
         printf("Creating in TA...\n");
 	for(i=0;i<MAX_FILES;i++) {
-		res = fs_create(&sess,files[i],sizeof(file_00),
+		res = fs_create(&sess,files[i],sizeof(files[i]),
 			TEE_DATA_FLAG_ACCESS_WRITE|
 			TEE_DATA_FLAG_ACCESS_WRITE_META,
 			0,data,sizeof(data),&obj[i],storage_id);

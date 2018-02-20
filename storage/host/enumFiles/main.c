@@ -46,7 +46,9 @@ int main(int argc, char *argv[])
         	if(res!=TEEC_SUCCESS)
                 	errx(1,"fs_create failed with code 0x%x",res);
 
-        	printf("Created in TA, obj[%d]=0x%x\n",i,obj[i]);
+        	printf("Created in TA, obj[%d]=0x%x, files[%d]=",i,obj[i],i);
+		for(j=0;j<sizeof(files[i]);j++) printf("%x",files[i][j]); 
+		printf("\n");
 	}
 
 	res = fs_alloc_enum(&sess,&e);

@@ -1,4 +1,6 @@
 #include "keygen.h"
+#include <stdlib.h>
+#include <string.h>
 
 #define ASSERT_PARAM_TYPE(pt) \
 do { \
@@ -12,6 +14,7 @@ TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
 	TEE_ObjectHandle transient_key = (TEE_ObjectHandle)NULL;
 	size_t key_size = 256;
 	TEE_ObjectInfo keyInfo;
+	char *keyFileName = 0;
 
 	(void)params;
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
@@ -33,8 +36,16 @@ TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
 
 	TEE_GetObjectInfo1(transient_key, &keyInfo);
 	DMSG("keyInfo: %zd bytes",sizeof(TEE_ObjectInfo));
+
+	DMSG("Input params[0], storage id: %d",params[0].value.a);
+
+	keyFileName = malloc(params[1].memref.size+1);
+	memcpy(keyFileName,params[1].memref.buffer,params[1].memref.size);
+	keyFileName[params[1].memref.size]=0;
+	DMSG("Input params[1], key filename: %s",keyFileName);
 cleanup2:
 	TEE_FreeTransientObject(transient_key);
 cleanup1:
+	free(keyFileName);
 	return TEE_SUCCESS;
 }

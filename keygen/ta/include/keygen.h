@@ -1,0 +1,8 @@
+#ifndef KEYGEN_H
+#define KEYGEN_H
+
+#include <tee_api.h>
+
+TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4]);
+
+#endif

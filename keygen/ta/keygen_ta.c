@@ -1,5 +1,6 @@
 #include <tee_internal_api.h>
 #include <keygen_ta.h>
+#include <keygen.h>
 
 TEE_Result TA_CreateEntryPoint(void)
 {
@@ -42,7 +43,7 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	switch(cmd_id) {
 	case TA_KEYGEN_CMD:
 		IMSG("KeyGen CMD\n");
-		return TEE_SUCCESS;
+		return ta_keygen_cmd(param_types,params);
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}

@@ -14,8 +14,14 @@ TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
 		goto cleanup1;
 	}
 
-	TEE_FreeTransientObject(transient_key);
 
+	if((result=TEE_GenerateKey(transient_key,key_size,NULL,0))!=TEE_SUCCESS){
+		EMSG("Failed to generate a transient key: 0x%x", result);
+		goto cleanup2;
+	}
+
+cleanup2:
+	TEE_FreeTransientObject(transient_key);
 cleanup1:
 	return TEE_SUCCESS;
 }

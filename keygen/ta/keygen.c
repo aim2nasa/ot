@@ -5,6 +5,7 @@ TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
 	TEE_Result result = TEE_SUCCESS;
 	TEE_ObjectHandle transient_key = (TEE_ObjectHandle)NULL;
 	size_t key_size = 256;
+	TEE_ObjectInfo keyInfo;
 
 	(void)param_types;
 	(void)params;
@@ -22,6 +23,8 @@ TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
 	}
 	DMSG("Key(%zd bit) generated with TransientObject(0x%p)",key_size,(void*)transient_key);
 
+	TEE_GetObjectInfo1(transient_key, &keyInfo);
+	DMSG("keyInfo: %zd bytes",sizeof(TEE_ObjectInfo));
 cleanup2:
 	TEE_FreeTransientObject(transient_key);
 cleanup1:

@@ -1,2 +1,2 @@
 global-incdirs-y += include
-srcs-y += hello_ta.c
+srcs-y += keygen_ta.c

@@ -13,12 +13,14 @@ TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
 		EMSG("Failed to Allocate transient object handle : 0x%x",result);
 		goto cleanup1;
 	}
+	DMSG("Allocated TransientObject: 0x%p",(void*)transient_key);
 
 
 	if((result=TEE_GenerateKey(transient_key,key_size,NULL,0))!=TEE_SUCCESS){
 		EMSG("Failed to generate a transient key: 0x%x", result);
 		goto cleanup2;
 	}
+	DMSG("Key(%zd bit) generated with TransientObject(0x%p)",key_size,(void*)transient_key);
 
 cleanup2:
 	TEE_FreeTransientObject(transient_key);

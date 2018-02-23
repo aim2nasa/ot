@@ -69,7 +69,31 @@ cleanup1:
 
 TEE_Result ta_keyopen_cmd(uint32_t param_types, TEE_Param params[4])
 {
-	(void)param_types;
-	(void)params;
-	return TEE_ERROR_NOT_IMPLEMENTED; 
+	TEE_Result result = TEE_SUCCESS;
+	TEE_ObjectHandle key = (TEE_ObjectHandle)NULL;
+	char *keyFileName = 0;
+
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_MEMREF_INPUT,
+			  TEE_PARAM_TYPE_VALUE_OUTPUT,TEE_PARAM_TYPE_NONE));
+
+	DMSG("Input params[0], storage id: %d",params[0].value.a);
+
+	keyFileName = malloc(params[1].memref.size+1);
+	memcpy(keyFileName,params[1].memref.buffer,params[1].memref.size);
+	keyFileName[params[1].memref.size]=0;
+	DMSG("Input params[1], key filename: %s",keyFileName);
+
+	if((result=TEE_OpenPersistentObject(params[0].value.a,
+					    params[1].memref.buffer,params[1].memref.size,
+					    flags,&key))!=TEE_SUCCESS){
+		EMSG("Failed to open a persistent key: 0x%x", result);
+		goto cleanup1;
+	}
+	params[2].value.a = (uintptr_t)key;
+	DMSG("%s persistent object(0x%p) opened",keyFileName,(void*)key);
+
+cleanup1:
+	free(keyFileName);
+	return result;
 }

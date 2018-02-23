@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <tee_client_api.h>
 #include <keygen_ta.h>
+#include <string.h>
 
 #define TEEC_OPERATION_INITIALIZER	{ 0 }
 #define TEE_STORAGE_PRIVATE		0x00000001
@@ -14,7 +15,14 @@ int main(int argc, char *argv[])
 	TEEC_UUID uuid = TA_KEYGEN_UUID;
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
-	uint8_t key_filename[]={ "test.key" };
+	uint8_t key_filename[256]={ 0 };
+
+	if(argc>1)
+		memcpy(key_filename,argv[1],strlen(argv[1]));
+	else
+		memcpy(key_filename,"test.key",strlen("test.key"));
+
+	printf("key filename:%s\n",key_filename);
 
 	printf("TEEC_InitializeContext...\n");
 	res = TEEC_InitializeContext(NULL,&ctx);
@@ -31,7 +39,7 @@ int main(int argc, char *argv[])
 	printf("Invoking TA...\n");
 	op.params[0].value.a = TEE_STORAGE_PRIVATE;
 	op.params[1].tmpref.buffer = key_filename;
-	op.params[1].tmpref.size = sizeof(key_filename);
+	op.params[1].tmpref.size = strlen((const char*)key_filename);
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
 
 	res = TEEC_InvokeCommand(&sess,TA_KEYGEN_CMD,&op,&err_origin);

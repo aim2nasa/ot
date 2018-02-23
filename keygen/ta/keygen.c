@@ -97,3 +97,13 @@ cleanup1:
 	free(keyFileName);
 	return result;
 }
+
+TEE_Result ta_keyclose_cmd(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_NONE,
+			  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+
+	TEE_CloseObject((TEE_ObjectHandle)(uintptr_t)params[0].value.a);
+	return TEE_SUCCESS;
+}

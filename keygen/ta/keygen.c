@@ -57,6 +57,8 @@ TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
 		goto cleanup2;
 	}
 	DMSG("%s persistent object(0x%p) created",keyFileName,(void*)persistent_key);
+
+	TEE_CloseObject(persistent_key);
 cleanup2:
 	TEE_FreeTransientObject(transient_key);
 cleanup1:

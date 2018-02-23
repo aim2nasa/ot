@@ -65,3 +65,10 @@ cleanup1:
 	free(keyFileName);
 	return result;
 }
+
+TEE_Result ta_keyopen_cmd(uint32_t param_types, TEE_Param params[4])
+{
+	(void)param_types;
+	(void)params;
+	return TEE_ERROR_NOT_IMPLEMENTED; 
+}

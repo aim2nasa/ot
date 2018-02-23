@@ -17,9 +17,13 @@ int main(int argc, char *argv[])
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 };
 
-	if(argc>1)
+	if(argc>1){
+		if(strlen(argv[1])>=sizeof(key_filename)) {
+			printf("key filename is over the buffer limit(%zd)\n",sizeof(key_filename));
+			return 1;
+		}
 		memcpy(key_filename,argv[1],strlen(argv[1]));
-	else
+	}else
 		memcpy(key_filename,"test.key",strlen("test.key"));
 
 	printf("key filename:%s\n",key_filename);

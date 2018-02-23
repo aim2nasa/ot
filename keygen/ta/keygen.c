@@ -61,5 +61,5 @@ cleanup2:
 	TEE_FreeTransientObject(transient_key);
 cleanup1:
 	free(keyFileName);
-	return TEE_SUCCESS;
+	return result;
 }

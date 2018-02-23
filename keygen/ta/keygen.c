@@ -8,6 +8,12 @@ do { \
 		return TEE_ERROR_BAD_PARAMETERS; \
 } while (0)
 
+static uint32_t flags = TEE_DATA_FLAG_ACCESS_READ |
+			TEE_DATA_FLAG_ACCESS_WRITE |
+			TEE_DATA_FLAG_ACCESS_WRITE_META |
+			TEE_DATA_FLAG_SHARE_READ |
+			TEE_DATA_FLAG_SHARE_WRITE; 
+
 TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
 {
 	TEE_Result result = TEE_SUCCESS;
@@ -16,11 +22,6 @@ TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
 	size_t key_size = 256;
 	TEE_ObjectInfo keyInfo;
 	char *keyFileName = 0;
-	uint32_t flags = TEE_DATA_FLAG_ACCESS_READ |
-			 TEE_DATA_FLAG_ACCESS_WRITE |
-			 TEE_DATA_FLAG_ACCESS_WRITE_META |
-			 TEE_DATA_FLAG_SHARE_READ |
-			 TEE_DATA_FLAG_SHARE_WRITE; 
 
 	(void)params;
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES

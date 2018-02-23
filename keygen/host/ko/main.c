@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 };
-	uint32_t keyObj;
+	uint32_t keyObj=0;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))

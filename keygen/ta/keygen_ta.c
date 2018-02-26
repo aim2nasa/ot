@@ -53,6 +53,21 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	case TA_KEY_UNLINK_CMD:
 		IMSG("KeyUnlink CMD\n");
 		return ta_key_unlink_cmd(param_types,params);
+	case TA_KEY_ALLOC_ENUM_CMD:
+		IMSG("KeyAllocEnum CMD\n");
+		return ta_key_alloc_enum_cmd(param_types,params);
+	case TA_KEY_FREE_ENUM_CMD:
+		IMSG("KeyFreeEnum CMD\n");
+		return ta_key_free_enum_cmd(param_types,params);
+	case TA_KEY_RESET_ENUM_CMD:
+		IMSG("KeyResetEnum CMD\n");
+		return ta_key_reset_enum_cmd(param_types,params);
+	case TA_KEY_START_ENUM_CMD:
+		IMSG("KeyStartEnum CMD\n");
+		return ta_key_start_enum_cmd(param_types,params);
+	case TA_KEY_NEXT_ENUM_CMD:
+		IMSG("KeyNextEnum CMD\n");
+		return ta_key_next_enum_cmd(param_types,params);
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}

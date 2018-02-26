@@ -50,6 +50,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	case TA_KEYCLOSE_CMD:
 		IMSG("KeyClose CMD\n");
 		return ta_keyclose_cmd(param_types,params);
+	case TA_KEYUNLINK_CMD:
+		IMSG("KeyUnlink CMD\n");
+		return ta_keyunlink_cmd(param_types,params);
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}

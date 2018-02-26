@@ -9,5 +9,6 @@
 #define TA_KEYGEN_CMD		0
 #define TA_KEYOPEN_CMD		1
 #define TA_KEYCLOSE_CMD		2
+#define TA_KEYUNLINK_CMD	3
 
 #endif

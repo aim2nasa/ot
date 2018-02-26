@@ -4,6 +4,7 @@
 #include <keygen_ta.h>
 #include <string.h>
 #include "enumHelper.h"
+#include <stdlib.h>
 
 #define TEE_STORAGE_PRIVATE		0x00000001
 
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
 	int i,j;
 	uint8_t info[200];
 	uint8_t id[200];
+	char *fileName = 0;
 
 	print("TEEC_InitializeContext...\n");
 	res = TEEC_InitializeContext(NULL,&ctx);
@@ -59,9 +61,10 @@ int main(int argc, char *argv[])
 	while(TEEC_SUCCESS==fs_next_enum(&sess,err_origin,info,&infoSize,id,&idSize)){
 		printf("enum loop:%d, infoSize:%zd,idSize:%u \n",i++,infoSize,idSize);
 		printf(" id:"); 
-		for(j=0;j<idSize;j++) {
-			printf("%x",id[j]); 
-		}
+		fileName = malloc(idSize);
+		memcpy(fileName,id,idSize);
+		fileName[idSize]=0;
+		printf("%s",fileName); 
 		printf("\n info:"); 
 		for(j=0;j<infoSize;j++) {
 			printf("%x",info[j]); 
@@ -70,6 +73,7 @@ int main(int argc, char *argv[])
 
 		infoSize = sizeof(info);
 		idSize = sizeof(id);
+		free(fileName);
 	}
 
 	res = fs_free_enum(&sess,err_origin);

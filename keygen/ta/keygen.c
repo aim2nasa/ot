@@ -14,7 +14,7 @@ static uint32_t flags = TEE_DATA_FLAG_ACCESS_READ |
 			TEE_DATA_FLAG_SHARE_READ |
 			TEE_DATA_FLAG_SHARE_WRITE; 
 
-TEE_Result ta_keygen_cmd(uint32_t param_types, TEE_Param params[4])
+TEE_Result ta_key_gen_cmd(uint32_t param_types, TEE_Param params[4])
 {
 	TEE_Result result = TEE_SUCCESS;
 	TEE_ObjectHandle transient_key = (TEE_ObjectHandle)NULL;
@@ -67,7 +67,7 @@ cleanup1:
 	return result;
 }
 
-TEE_Result ta_keyopen_cmd(uint32_t param_types, TEE_Param params[4])
+TEE_Result ta_key_open_cmd(uint32_t param_types, TEE_Param params[4])
 {
 	TEE_Result result = TEE_SUCCESS;
 	TEE_ObjectHandle key = (TEE_ObjectHandle)NULL;
@@ -98,7 +98,7 @@ cleanup1:
 	return result;
 }
 
-TEE_Result ta_keyclose_cmd(uint32_t param_types, TEE_Param params[4])
+TEE_Result ta_key_close_cmd(uint32_t param_types, TEE_Param params[4])
 {
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
 			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_NONE,
@@ -109,7 +109,7 @@ TEE_Result ta_keyclose_cmd(uint32_t param_types, TEE_Param params[4])
 	return TEE_SUCCESS;
 }
 
-TEE_Result ta_keyunlink_cmd(uint32_t param_types, TEE_Param params[4])
+TEE_Result ta_key_unlink_cmd(uint32_t param_types, TEE_Param params[4])
 {
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
 			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_NONE,

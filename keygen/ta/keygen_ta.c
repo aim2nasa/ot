@@ -41,18 +41,18 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	(void)&params;
 
 	switch(cmd_id) {
-	case TA_KEYGEN_CMD:
+	case TA_KEY_GEN_CMD:
 		IMSG("KeyGen CMD\n");
-		return ta_keygen_cmd(param_types,params);
-	case TA_KEYOPEN_CMD:
+		return ta_key_gen_cmd(param_types,params);
+	case TA_KEY_OPEN_CMD:
 		IMSG("KeyOpen CMD\n");
-		return ta_keyopen_cmd(param_types,params);
-	case TA_KEYCLOSE_CMD:
+		return ta_key_open_cmd(param_types,params);
+	case TA_KEY_CLOSE_CMD:
 		IMSG("KeyClose CMD\n");
-		return ta_keyclose_cmd(param_types,params);
-	case TA_KEYUNLINK_CMD:
+		return ta_key_close_cmd(param_types,params);
+	case TA_KEY_UNLINK_CMD:
 		IMSG("KeyUnlink CMD\n");
-		return ta_keyunlink_cmd(param_types,params);
+		return ta_key_unlink_cmd(param_types,params);
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}

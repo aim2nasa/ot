@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	op.params[1].tmpref.size = strlen((const char*)key_filename);
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
 
-	res = TEEC_InvokeCommand(&sess,TA_KEYGEN_CMD,&op,&err_origin);
+	res = TEEC_InvokeCommand(&sess,TA_KEY_GEN_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
 	print("TA Invoked\n");

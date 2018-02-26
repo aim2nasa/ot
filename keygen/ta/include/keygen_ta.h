@@ -6,9 +6,9 @@
 	{ 0xab201cb2, 0x177d, 0x11e8, \
 		{ 0xb6, 0x42, 0x0e, 0xd5, 0xf8, 0x9f, 0x71, 0x8b} }
 
-#define TA_KEYGEN_CMD		0
-#define TA_KEYOPEN_CMD		1
-#define TA_KEYCLOSE_CMD		2
-#define TA_KEYUNLINK_CMD	3
+#define TA_KEY_GEN_CMD		0
+#define TA_KEY_OPEN_CMD		1
+#define TA_KEY_CLOSE_CMD	2
+#define TA_KEY_UNLINK_CMD	3
 
 #endif

@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	res = fs_alloc_enum(&sess,&err_origin);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_alloc_enum failed with code 0x%x",res);
-	printf("enum handle 0x%x\n",err_origin);
+	print("enum handle 0x%x\n",err_origin);
 
 	res = fs_start_enum(&sess,err_origin,storage_id);
         if(res!=TEEC_SUCCESS)
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	infoSize = sizeof(info);
 	idSize = sizeof(id);
 	while(TEEC_SUCCESS==fs_next_enum(&sess,err_origin,info,&infoSize,id,&idSize)){
-		printf("enum loop:%d, infoSize:%zd,idSize:%u \n",i++,infoSize,idSize);
+		printf("[%d] infoSize:%zd,idSize:%u \n",i++,infoSize,idSize);
 		printf(" id:"); 
 		fileName = malloc(idSize);
 		memcpy(fileName,id,idSize);

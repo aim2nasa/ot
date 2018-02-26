@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
 	size_t infoSize;
 	uint32_t idSize;
 	int i,j;
-	uint8_t info[200];
-	uint8_t id[200];
+	uint8_t info[256];
+	uint8_t id[256+1];	//+1 to include null at the end of name
 	char *fileName = 0;
 
 	print("TEEC_InitializeContext...\n");

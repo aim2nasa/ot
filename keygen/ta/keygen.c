@@ -1,14 +1,7 @@
 #include "keygen.h"
 #include <stdlib.h>
 #include <string.h>
-
-#define ASSERT_PARAM_TYPE(pt) \
-do { \
-	if ((pt) != param_types) \
-		return TEE_ERROR_BAD_PARAMETERS; \
-} while (0)
-
-#define VAL2HANDLE(v) (void *)(uintptr_t)(v)
+#include "common.h"
 
 static uint32_t flags = TEE_DATA_FLAG_ACCESS_READ |
 			TEE_DATA_FLAG_ACCESS_WRITE |

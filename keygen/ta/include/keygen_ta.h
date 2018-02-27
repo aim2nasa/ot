@@ -17,5 +17,6 @@
 #define TA_KEY_NEXT_ENUM_CMD	8
 #define TA_KEY_ALLOC_OPER_CMD	9
 #define TA_KEY_FREE_OPER_CMD	10
+#define TA_KEY_SETKEY_OPER_CMD	11
 
 #endif

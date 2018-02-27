@@ -74,6 +74,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	case TA_KEY_FREE_OPER_CMD:
 		IMSG("KeyFreeOper CMD\n");
 		return ta_key_free_oper_cmd(param_types,params);
+	case TA_KEY_SETKEY_OPER_CMD:
+		IMSG("KeySetkeyOper CMD\n");
+		return ta_key_setkey_oper_cmd(param_types,params);
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}

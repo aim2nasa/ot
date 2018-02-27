@@ -19,4 +19,7 @@
 #define TA_KEY_FREE_OPER_CMD	10
 #define TA_KEY_SETKEY_OPER_CMD	11
 
+#define TA_MEM_ALLOC_CMD	100
+#define TA_MEM_FREE_CMD		101
+
 #endif

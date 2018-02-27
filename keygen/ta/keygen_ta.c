@@ -1,6 +1,7 @@
 #include <tee_internal_api.h>
 #include <keygen_ta.h>
 #include <keygen.h>
+#include <mem.h>
 
 TEE_Result TA_CreateEntryPoint(void)
 {
@@ -77,6 +78,12 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	case TA_KEY_SETKEY_OPER_CMD:
 		IMSG("KeySetkeyOper CMD\n");
 		return ta_key_setkey_oper_cmd(param_types,params);
+	case TA_MEM_ALLOC_CMD:
+		IMSG("MemAlloc CMD\n");
+		return ta_mem_alloc_cmd(param_types,params);
+	case TA_MEM_FREE_CMD:
+		IMSG("MemFree CMD\n");
+		return ta_mem_free_cmd(param_types,params);
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}

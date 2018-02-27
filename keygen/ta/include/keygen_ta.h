@@ -22,4 +22,8 @@
 #define TA_MEM_ALLOC_CMD	100
 #define TA_MEM_FREE_CMD		101
 
+#define TA_CIPHER_INIT_CMD	200
+#define TA_CIPHER_UPDATE_CMD	201
+#define TA_CIPHER_DO_FINAL_CMD	202
+
 #endif

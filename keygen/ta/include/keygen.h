@@ -12,5 +12,7 @@ TEE_Result ta_key_free_enum_cmd(uint32_t param_types, TEE_Param params[4]);
 TEE_Result ta_key_reset_enum_cmd(uint32_t param_types, TEE_Param params[4]);
 TEE_Result ta_key_start_enum_cmd(uint32_t param_types, TEE_Param params[4]);
 TEE_Result ta_key_next_enum_cmd(uint32_t param_types, TEE_Param params[4]);
+TEE_Result ta_key_alloc_oper_cmd(uint32_t param_types, TEE_Param params[4]);
+TEE_Result ta_key_free_oper_cmd(uint32_t param_types, TEE_Param params[4]);
 
 #endif

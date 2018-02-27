@@ -15,5 +15,7 @@
 #define TA_KEY_RESET_ENUM_CMD	6
 #define TA_KEY_START_ENUM_CMD	7
 #define TA_KEY_NEXT_ENUM_CMD	8
+#define TA_KEY_ALLOC_OPER_CMD	9
+#define TA_KEY_FREE_OPER_CMD	10
 
 #endif

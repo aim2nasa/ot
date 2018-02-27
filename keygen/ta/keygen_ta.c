@@ -68,6 +68,12 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	case TA_KEY_NEXT_ENUM_CMD:
 		IMSG("KeyNextEnum CMD\n");
 		return ta_key_next_enum_cmd(param_types,params);
+	case TA_KEY_ALLOC_OPER_CMD:
+		IMSG("KeyAllocOper CMD\n");
+		return ta_key_alloc_oper_cmd(param_types,params);
+	case TA_KEY_FREE_OPER_CMD:
+		IMSG("KeyFreeOper CMD\n");
+		return ta_key_free_oper_cmd(param_types,params);
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}

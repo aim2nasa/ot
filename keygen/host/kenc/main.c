@@ -26,8 +26,9 @@ int main(int argc, char *argv[])
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 },inp_filename[256]={ 0 };
 	uint32_t keyObj=0;
+	FILE *fp;
 
-	if(argc>1){
+	if(argc>2){
 		if(strlen(argv[1])>=sizeof(key_filename))
 			errx(1,"key filename is over the buffer limit(%zd)\n",sizeof(key_filename));
 
@@ -57,6 +58,10 @@ int main(int argc, char *argv[])
 	keyObj = op.params[2].value.a;	
 
 	printf("key obtained:%s,handle:%u\n",key_filename,keyObj);
+
+	fp = fopen(argv[2],"r");
+	if(fp==0) errx(1,"fopen failure:%s",argv[2]);
+	fclose(fp);
 	
 	op.params[0].value.a = keyObj;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);

@@ -36,21 +36,14 @@ int main(int argc, char *argv[])
 		errx(1,"usage: kenc <keyfile>");
 	}
 
-	print("key filename:%s\n",key_filename);
-
-	print("TEEC_InitializeContext...\n");
 	res = TEEC_InitializeContext(NULL,&ctx);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"TEEC_InitializeContext failed with code 0x%x",res);
-	print("TEEC_InitializeContext ok\n");
 
-	print("TEEC_OpenSession...\n");
 	res = TEEC_OpenSession(&ctx,&sess,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL,&err_origin);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,err_origin);
-	print("TEEC_OpenSession ok\n");
 
-	print("Invoking TA...\n");
 	op.params[0].value.a = TEE_STORAGE_PRIVATE;
 	op.params[1].tmpref.buffer = key_filename;
 	op.params[1].tmpref.size = strlen((const char*)key_filename);
@@ -61,9 +54,8 @@ int main(int argc, char *argv[])
 		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
 	
 	keyObj = op.params[2].value.a;	
-	print("TA Invoked\n");
 
-	printf("file open successful:%s,handle:%u\n",key_filename,keyObj);
+	printf("key obtained:%s,handle:%u\n",key_filename,keyObj);
 	
 	op.params[0].value.a = keyObj;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
@@ -71,12 +63,7 @@ int main(int argc, char *argv[])
 	if(res!=TEEC_SUCCESS)
 		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
 
-	printf("file close successful:%s,handle:%u\n",key_filename,keyObj);
-
-	print("TEEC_FinalizeContext...\n");
 	TEEC_FinalizeContext(&ctx);
-	print("TEEC_FinalizeContext ok\n");
-
 	print("KeyEnc end\n");
 	return 0;
 }

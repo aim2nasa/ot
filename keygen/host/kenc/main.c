@@ -24,20 +24,21 @@ int main(int argc, char *argv[])
 	TEEC_UUID uuid = TA_KEYGEN_UUID;
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
-	uint8_t key_filename[256]={ 0 },inp_filename[256]={ 0 };
+	uint8_t key_filename[256]={ 0 },inp_filename[256]={ 0 },out_filename[256]={ 0 };
 	uint8_t buffer[32]={ 0 };
 	uint32_t keyObj=0;
-	FILE *fp;
+	FILE *fp,*out_fp;
 	size_t nSize;
 
-	if(argc>2){
+	if(argc>3){
 		if(strlen(argv[1])>=sizeof(key_filename))
 			errx(1,"key filename is over the buffer limit(%zd)\n",sizeof(key_filename));
 
 		memcpy(key_filename,argv[1],strlen(argv[1]));
 		memcpy(inp_filename,argv[2],strlen(argv[2]));
+		memcpy(out_filename,argv[3],strlen(argv[3]));
 	}else{
-		errx(1,"usage: kenc <keyfile> <inpfile>");
+		errx(1,"usage: kenc <keyfile> <inpfile> <outfile>");
 	}
 
 	res = TEEC_InitializeContext(NULL,&ctx);
@@ -62,11 +63,13 @@ int main(int argc, char *argv[])
 	printf("key obtained:%s,handle:%u\n",key_filename,keyObj);
 
 	fp = fopen(argv[2],"r");
+	out_fp = fopen(argv[3],"w");
 	if(fp==0) errx(1,"fopen failure:%s",argv[2]);
 	while((nSize=fread(buffer,1,sizeof(buffer),fp))>0) {
 		printf(".");
 	}
 	printf("\n");
+	fclose(out_fp);
 	fclose(fp);
 	
 	op.params[0].value.a = keyObj;

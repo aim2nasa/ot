@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 },inp_filename[256]={ 0 };
-	uint8_t buffer[32+1]={ 0 };
+	uint8_t buffer[32]={ 0 };
 	uint32_t keyObj=0;
 	FILE *fp;
 	size_t nSize;
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
 	fp = fopen(argv[2],"r");
 	if(fp==0) errx(1,"fopen failure:%s",argv[2]);
-	while((nSize=fread(buffer,1,sizeof(buffer)-1,fp))>0) {
+	while((nSize=fread(buffer,1,sizeof(buffer),fp))>0) {
 		printf(".");
 	}
 	printf("\n");

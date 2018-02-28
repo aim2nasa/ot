@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	TEEC_UUID uuid = TA_KEYGEN_UUID;
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
-	uint8_t key_filename[256]={ 0 };
+	uint8_t key_filename[256]={ 0 },inp_filename[256]={ 0 };
 	uint32_t keyObj=0;
 
 	if(argc>1){
@@ -32,8 +32,9 @@ int main(int argc, char *argv[])
 			errx(1,"key filename is over the buffer limit(%zd)\n",sizeof(key_filename));
 
 		memcpy(key_filename,argv[1],strlen(argv[1]));
+		memcpy(inp_filename,argv[2],strlen(argv[2]));
 	}else{
-		errx(1,"usage: kenc <keyfile>");
+		errx(1,"usage: kenc <keyfile> <inpfile>");
 	}
 
 	res = TEEC_InitializeContext(NULL,&ctx);

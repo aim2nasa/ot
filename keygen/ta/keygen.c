@@ -110,7 +110,7 @@ TEE_Result ta_key_unlink_cmd(uint32_t param_types, TEE_Param params[4])
 			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_NONE,
 			  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
 
-	DMSG("unlinking object(0x%u)",params[0].value.a);
+	DMSG("unlinking object(0x%x)",params[0].value.a);
 	TEE_CloseAndDeletePersistentObject1((TEE_ObjectHandle)(uintptr_t)params[0].value.a);
 	return TEE_SUCCESS;
 }

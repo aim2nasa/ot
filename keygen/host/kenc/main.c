@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 		printf("TA_KEY_ALLOC_OPER_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
 	}
-	encOp = VAL2HANDLE(op.params[1].value.a);
+	encOp = VAL2HANDLE(op.params[0].value.a);
 	printf("allocateOperation handle:%p\n",encOp);
 
 	fp = fopen(argv[2],"r");

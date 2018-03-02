@@ -200,7 +200,7 @@ TEE_Result ta_key_next_enum_cmd(uint32_t param_types, TEE_Param params[4])
 TEE_Result ta_key_alloc_oper_cmd(uint32_t param_types, TEE_Param params[4])
 {
 	TEE_Result res;
-	TEE_OperationHandle op;
+	TEE_OperationHandle op = TEE_HANDLE_NULL;
 
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
 			  (TEE_PARAM_TYPE_VALUE_OUTPUT, TEE_PARAM_TYPE_VALUE_INPUT,
@@ -208,6 +208,7 @@ TEE_Result ta_key_alloc_oper_cmd(uint32_t param_types, TEE_Param params[4])
 
 	res = TEE_AllocateOperation(&op,params[1].value.a,params[2].value.a,params[3].value.a);
 	params[0].value.a = (uintptr_t)op;
+	DMSG("allocate operation(%p)",(void*)(uintptr_t)params[0].value.a);
 	return res;
 }
 

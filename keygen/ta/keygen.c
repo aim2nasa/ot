@@ -27,14 +27,14 @@ TEE_Result ta_key_gen_cmd(uint32_t param_types, TEE_Param params[4])
 		EMSG("Failed to Allocate transient object handle : 0x%x",result);
 		goto cleanup1;
 	}
-	DMSG("Allocated TransientObject: 0x%p",(void*)transient_key);
+	DMSG("Allocated TransientObject: %p",(void*)transient_key);
 
 
 	if((result=TEE_GenerateKey(transient_key,key_size,NULL,0))!=TEE_SUCCESS){
 		EMSG("Failed to generate a transient key: 0x%x", result);
 		goto cleanup2;
 	}
-	DMSG("Key(%zd bit) generated with TransientObject(0x%p)",key_size,(void*)transient_key);
+	DMSG("Key(%zd bit) generated with TransientObject(%p)",key_size,(void*)transient_key);
 
 	TEE_GetObjectInfo1(transient_key, &keyInfo);
 	DMSG("keyInfo: %zd bytes",sizeof(TEE_ObjectInfo));
@@ -52,7 +52,7 @@ TEE_Result ta_key_gen_cmd(uint32_t param_types, TEE_Param params[4])
 		EMSG("Failed to create a persistent key: 0x%x", result);
 		goto cleanup2;
 	}
-	DMSG("%s persistent object(0x%p) created",keyFileName,(void*)persistent_key);
+	DMSG("%s persistent object(%p) created",keyFileName,(void*)persistent_key);
 
 	TEE_CloseObject(persistent_key);
 cleanup2:
@@ -86,7 +86,7 @@ TEE_Result ta_key_open_cmd(uint32_t param_types, TEE_Param params[4])
 		goto cleanup1;
 	}
 	params[2].value.a = (uintptr_t)key;
-	DMSG("%s persistent object(0x%p) opened",keyFileName,(void*)key);
+	DMSG("%s persistent object(%p) opened",keyFileName,(void*)key);
 
 cleanup1:
 	free(keyFileName);

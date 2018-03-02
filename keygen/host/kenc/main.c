@@ -84,6 +84,17 @@ int main(int argc, char *argv[])
 	encOp = VAL2HANDLE(op.params[0].value.a);
 	printf("allocateOperation handle:%p\n",encOp);
 
+	//inject key for the allocated operation
+	op.params[0].value.a = (uintptr_t)encOp;
+	op.params[1].value.a = keyObj;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE);
+	res = TEEC_InvokeCommand(&sess,TA_KEY_SETKEY_OPER_CMD,&op,&err_origin);
+	if(res!=TEEC_SUCCESS){
+		printf("TA_KEY_ALLOC_OPER_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+		goto cleanup3;
+	}
+	printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
+
 	//Read input file
 	fp = fopen(argv[2],"r");
 	out_fp = fopen(argv[3],"w");

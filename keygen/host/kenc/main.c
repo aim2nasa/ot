@@ -58,22 +58,20 @@ int main(int argc, char *argv[])
 		goto cleanup2;
 	}
 
+	//Open persistent key object
 	op.params[0].value.a = TEE_STORAGE_PRIVATE;
 	op.params[1].tmpref.buffer = key_filename;
 	op.params[1].tmpref.size = strlen((const char*)key_filename);
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_OUTPUT,TEEC_NONE);
-
 	res = TEEC_InvokeCommand(&sess,TA_KEY_OPEN_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS){
 		printf("TA_KEY_OPEN_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
 	}
-	
 	keyObj = op.params[2].value.a;	
-
 	printf("key obtained:%s,handle:0x%x\n",key_filename,keyObj);
 
-	//TEE_AllocateOperation
+	//Allocate operation
 	op.params[1].value.a = TEE_ALG_AES_ECB_NOPAD;
 	op.params[2].value.a = TEE_MODE_ENCRYPT;
 	op.params[3].value.a = keySize;
@@ -86,6 +84,7 @@ int main(int argc, char *argv[])
 	encOp = VAL2HANDLE(op.params[0].value.a);
 	printf("allocateOperation handle:%p\n",encOp);
 
+	//Read input file
 	fp = fopen(argv[2],"r");
 	out_fp = fopen(argv[3],"w");
 	if(fp==0) errx(1,"fopen failure:%s",argv[2]);
@@ -96,7 +95,7 @@ int main(int argc, char *argv[])
 	fclose(out_fp);
 	fclose(fp);
 
-	//TEE_FreeOperation
+	//Free Allocated operation
 	op.params[0].value.a = (uintptr_t)encOp;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
 	res = TEEC_InvokeCommand(&sess,TA_KEY_FREE_OPER_CMD,&op,&err_origin);
@@ -106,6 +105,7 @@ int main(int argc, char *argv[])
 	}
 	printf("allocateOperation handle:%p freed\n",encOp);
 	
+	//Close key
 	op.params[0].value.a = keyObj;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
 	res = TEEC_InvokeCommand(&sess,TA_KEY_CLOSE_CMD,&op,&err_origin);

@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	printf("key obtained:%s,handle:0x%x\n",key_filename,keyObj);
 
 	//Allocate operation
-	op.params[1].value.a = TEE_ALG_AES_ECB_NOPAD;
+	op.params[1].value.a = TEE_ALG_AES_ECB_NOPAD;	//does not require IV
 	op.params[2].value.a = TEE_MODE_ENCRYPT;
 	op.params[3].value.a = keySize;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_OUTPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT);
@@ -94,6 +94,18 @@ int main(int argc, char *argv[])
 		goto cleanup3;
 	}
 	printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
+	
+	//Initialize symmetric cipher operation
+	op.params[0].value.a = (uintptr_t)encOp;
+	op.params[1].tmpref.buffer = 0;
+	op.params[1].tmpref.size = 0;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
+	res = TEEC_InvokeCommand(&sess,TA_CIPHER_INIT_CMD,&op,&err_origin);
+	if(res!=TEEC_SUCCESS){
+		printf("TA_CIPHER_INIT_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+		goto cleanup3;
+	}
+	printf("Cipher operation Initialized with %p\n",encOp);
 
 	//Read input file
 	fp = fopen(argv[2],"r");

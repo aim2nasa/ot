@@ -95,6 +95,16 @@ int main(int argc, char *argv[])
 	printf("\n");
 	fclose(out_fp);
 	fclose(fp);
+
+	//TEE_FreeOperation
+	op.params[0].value.a = (uintptr_t)encOp;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
+	res = TEEC_InvokeCommand(&sess,TA_KEY_FREE_OPER_CMD,&op,&err_origin);
+	if(res!=TEEC_SUCCESS){
+		printf("TA_KEY_FREE_OPER_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+		goto cleanup3;
+	}
+	printf("allocateOperation handle:%p freed\n",encOp);
 	
 	op.params[0].value.a = keyObj;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);

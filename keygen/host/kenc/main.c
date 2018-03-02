@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	
 	keyObj = op.params[2].value.a;	
 
-	printf("key obtained:%s,handle:%u\n",key_filename,keyObj);
+	printf("key obtained:%s,handle:0x%x\n",key_filename,keyObj);
 
 	//TEE_AllocateOperation
 	op.params[1].value.a = TEE_ALG_AES_ECB_NOPAD;

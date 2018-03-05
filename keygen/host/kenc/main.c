@@ -19,6 +19,25 @@ int print(const char *format,...)
 #endif
 }
 
+static TEEC_SharedMemory in_shm={
+	.flags = TEEC_MEM_INPUT | TEEC_MEM_OUTPUT
+};
+static TEEC_SharedMemory out_shm={
+	.flags = TEEC_MEM_INPUT | TEEC_MEM_OUTPUT
+};
+
+static TEEC_Result allocate_shm(TEEC_Context *ctx,TEEC_SharedMemory *shm, size_t sz)
+{
+	shm->buffer = NULL;
+	shm->size = sz;
+	return TEEC_AllocateSharedMemory(ctx,shm);
+}
+
+static void free_shm(TEEC_SharedMemory *shm)
+{
+	TEEC_ReleaseSharedMemory(shm);
+}
+
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
@@ -32,6 +51,7 @@ int main(int argc, char *argv[])
 	uint32_t keyObj=0;
 	FILE *fp,*out_fp;
 	size_t nSize,keySize=256;
+	size_t size=1024;		//shared memory buffer size
 	TEE_OperationHandle encOp;
 
 	if(argc>3){
@@ -96,6 +116,16 @@ int main(int argc, char *argv[])
 	printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
 	
 	//Initialize symmetric cipher operation
+	if((res=allocate_shm(&ctx,&in_shm,size))!=TEEC_SUCCESS) {
+		printf("allocate_shm faild with code 0x%x\n",res);
+		goto cleanup3;
+	}
+	printf("shared memory buffer:%p,size:%zd\n",in_shm.buffer,in_shm.size);
+	if((res=allocate_shm(&ctx,&out_shm,size))!=TEEC_SUCCESS) {
+		printf("allocate_shm faild with code 0x%x\n",res);
+		goto cleanup3;
+	}
+	printf("shared memory buffer:%p,size:%zd\n",out_shm.buffer,out_shm.size);
 	op.params[0].value.a = (uintptr_t)encOp;
 	op.params[1].tmpref.buffer = 0;
 	op.params[1].tmpref.size = 0;
@@ -117,6 +147,8 @@ int main(int argc, char *argv[])
 	printf("\n");
 	fclose(out_fp);
 	fclose(fp);
+	free_shm(&out_shm);
+	free_shm(&in_shm);
 
 	//Free Allocated operation
 	op.params[0].value.a = (uintptr_t)encOp;

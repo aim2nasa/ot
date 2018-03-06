@@ -6,6 +6,7 @@
 #include <keygen_ta.h>
 #include <string.h>
 #include <common.h>
+#include <sys/stat.h>
 
 #define TEEC_OPERATION_INITIALIZER	{ 0 }
 #define TEE_STORAGE_PRIVATE		0x00000001
@@ -64,6 +65,7 @@ int main(int argc, char *argv[])
 	size_t size=1024;		//shared memory buffer size
 	TEE_OperationHandle encOp;
 	bool bEnc = true;
+	struct stat inpFileStat;
 
 	if(argc>4){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -170,6 +172,12 @@ int main(int argc, char *argv[])
 		if(out_fp==0) printf("<outfile>:%s\n",argv[2]);
 		goto cleanup3;
 	}
+
+	if(stat(argv[2],&inpFileStat)<0){
+		printf("stat failure\n");
+		goto cleanup3;
+	}
+	printf("inpfile:%s size:%ld\n",argv[2],inpFileStat.st_size);
 
 	while((nSize=fread(buffer,1,sizeof(buffer),fp))>0) {
 		//Cipher update

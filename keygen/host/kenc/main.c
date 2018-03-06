@@ -169,7 +169,12 @@ int main(int argc, char *argv[])
 			printf("TA_CIPHER_UPDATE_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 			goto cleanup4;
 		}
-		printf(".");
+		if((nSize=fwrite(out_shm.buffer,1,op.params[2].memref.size,out_fp))!=op.params[2].memref.size) {
+			printf("error, fwrite nSize:%zd != op.params[2].memref.size:%zd\n",nSize,op.params[2].memref.size);
+
+			goto cleanup4;
+		}
+		printf("[%zd] ",op.params[2].memref.size);
 	}
 	printf("\n");
 

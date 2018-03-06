@@ -38,6 +38,16 @@ static void free_shm(TEEC_SharedMemory *shm)
 	TEEC_ReleaseSharedMemory(shm);
 }
 
+static void copy_shm(TEEC_SharedMemory *shm,void *src,size_t n)
+{
+	memcpy(shm->buffer,src,n);
+}
+
+static void set_shm(TEEC_SharedMemory *shm,size_t n)
+{
+	memset(shm->buffer,0,n);
+}
+
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
@@ -142,13 +152,26 @@ int main(int argc, char *argv[])
 	out_fp = fopen(argv[3],"w");
 	if(fp==0) errx(1,"fopen failure:%s",argv[2]);
 	while((nSize=fread(buffer,1,sizeof(buffer),fp))>0) {
+		//Cipher update
+		copy_shm(&in_shm,buffer,nSize);
+		set_shm(&out_shm,size);
+		op.params[0].value.a = (uintptr_t)encOp;
+		op.params[1].memref.parent = &in_shm;
+		op.params[1].memref.size = nSize;
+		op.params[2].memref.parent = &out_shm;
+		op.params[2].memref.size = size;
+		op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,
+						 TEEC_MEMREF_PARTIAL_INOUT,
+						 TEEC_MEMREF_PARTIAL_INOUT,
+						 TEEC_NONE);
+		res = TEEC_InvokeCommand(&sess,TA_CIPHER_UPDATE_CMD,&op,&err_origin);
+		if(res!=TEEC_SUCCESS){
+			printf("TA_CIPHER_UPDATE_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+			goto cleanup4;
+		}
 		printf(".");
 	}
 	printf("\n");
-	fclose(out_fp);
-	fclose(fp);
-	free_shm(&out_shm);
-	free_shm(&in_shm);
 
 	//Free Allocated operation
 	op.params[0].value.a = (uintptr_t)encOp;
@@ -169,6 +192,11 @@ int main(int argc, char *argv[])
 		goto cleanup3;
 	}
 
+cleanup4:
+	fclose(out_fp);
+	fclose(fp);
+	free_shm(&out_shm);
+	free_shm(&in_shm);
 cleanup3:
 	TEEC_CloseSession(&sess);
 cleanup2:

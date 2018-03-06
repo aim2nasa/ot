@@ -164,7 +164,13 @@ int main(int argc, char *argv[])
 	//Read input file
 	fp = fopen(argv[2],"r");
 	out_fp = fopen(argv[3],"w");
-	if(fp==0) errx(1,"fopen failure:%s",argv[2]);
+	if(fp==0||out_fp==0) {
+		printf("fopen failure ");
+		if(fp==0) printf("<inpfile>:%s\n",argv[2]);
+		if(out_fp==0) printf("<outfile>:%s\n",argv[2]);
+		goto cleanup3;
+	}
+
 	while((nSize=fread(buffer,1,sizeof(buffer),fp))>0) {
 		//Cipher update
 		copy_shm(&in_shm,buffer,nSize);

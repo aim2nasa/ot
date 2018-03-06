@@ -63,19 +63,32 @@ int main(int argc, char *argv[])
 	size_t nSize,keySize=256;
 	size_t size=1024;		//shared memory buffer size
 	TEE_OperationHandle encOp;
+	bool bEnc = true;
 
-	if(argc>3){
+	if(argc>4){
 		if(strlen(argv[1])>=sizeof(key_filename))
 			errx(1,"key filename is over the buffer limit(%zd)\n",sizeof(key_filename));
 
 		memcpy(key_filename,argv[1],strlen(argv[1]));
 		memcpy(inp_filename,argv[2],strlen(argv[2]));
 		memcpy(out_filename,argv[3],strlen(argv[3]));
+		if(*argv[4]=='e') 
+			bEnc=true;
+		else if(*argv[4]=='d') 
+			bEnc = false;
+		else{
+			printf("mode must be either e(encoding) or d(decoding)\n");
+			goto cleanup1;
+		}
 	}else{
 		printf("encoding/decoding tool using key stored in trustzone\n");
-		printf("usage: ked <keyfile> <inpfile> <outfile>\n");
+		printf("usage: ked <keyfile> <inpfile> <outfile> <mode:e/d>:\n");
+		printf("       mode e:encoding, d:decoding\n");
+
 		goto cleanup1;
 	}
+	printf("mode:");
+	if(bEnc) printf("encoding\n"); else printf("decoding\n");
 
 	res = TEEC_InitializeContext(NULL,&ctx);
 	if(res!=TEEC_SUCCESS){
@@ -104,7 +117,7 @@ int main(int argc, char *argv[])
 
 	//Allocate operation
 	op.params[1].value.a = TEE_ALG_AES_ECB_NOPAD;	//does not require IV
-	op.params[2].value.a = TEE_MODE_ENCRYPT;
+	op.params[2].value.a = bEnc?TEE_MODE_ENCRYPT:TEE_MODE_DECRYPT;
 	op.params[3].value.a = keySize;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_OUTPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT);
 	res = TEEC_InvokeCommand(&sess,TA_KEY_ALLOC_OPER_CMD,&op,&err_origin);

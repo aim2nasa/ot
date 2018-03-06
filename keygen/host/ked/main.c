@@ -72,7 +72,8 @@ int main(int argc, char *argv[])
 		memcpy(inp_filename,argv[2],strlen(argv[2]));
 		memcpy(out_filename,argv[3],strlen(argv[3]));
 	}else{
-		printf("usage: kenc <keyfile> <inpfile> <outfile>\n");
+		printf("encoding/decoding tool using key stored in trustzone\n");
+		printf("usage: ked <keyfile> <inpfile> <outfile>\n");
 		goto cleanup1;
 	}
 

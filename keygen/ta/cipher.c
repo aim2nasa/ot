@@ -33,8 +33,8 @@ TEE_Result ta_cipher_update_cmd(uint32_t param_types, TEE_Param params[4])
 	TEE_Result res;
 
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
-			  (TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_MEMREF_INOUT,
-			   TEE_PARAM_TYPE_MEMREF_INOUT, TEE_PARAM_TYPE_NONE));
+			  (TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_MEMREF_INPUT,
+			   TEE_PARAM_TYPE_MEMREF_OUTPUT, TEE_PARAM_TYPE_NONE));
 
 	DMSG("Cipher Update input:%s input buffer size:%d output buffer size:%d",
 		(char*)params[1].memref.buffer,params[1].memref.size,params[2].memref.size);

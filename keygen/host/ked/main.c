@@ -10,6 +10,7 @@
 
 #define TEEC_OPERATION_INITIALIZER	{ 0 }
 #define TEE_STORAGE_PRIVATE		0x00000001
+#define TEE_AES_BLOCK_SIZE             16UL
 
 int print(const char *format,...)
 {
@@ -58,11 +59,11 @@ int main(int argc, char *argv[])
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 },inp_filename[256]={ 0 },out_filename[256]={ 0 };
-	uint8_t buffer[32]={ 0 };
+	uint8_t buffer[TEE_AES_BLOCK_SIZE]={ 0 };
 	uint32_t keyObj=0;
 	FILE *fp,*out_fp;
 	size_t nSize,keySize=256;
-	size_t size=1024;		//shared memory buffer size
+	size_t size=TEE_AES_BLOCK_SIZE; 		//shared memory buffer size
 	TEE_OperationHandle encOp;
 	bool bEnc = true;
 	struct stat inpFileStat;
@@ -179,13 +180,14 @@ int main(int argc, char *argv[])
 	}
 	printf("inpfile:%s size:%ld\n",argv[2],inpFileStat.st_size);
 
-	while((nSize=fread(buffer,1,sizeof(buffer),fp))>0) {
+	while((nSize=fread(buffer,1,sizeof(buffer),fp))>0) { //read as much as TEE_AES_BLOCK_SIZE
 		//Cipher update
-		copy_shm(&in_shm,buffer,nSize);
+		set_shm(&in_shm,size);
 		set_shm(&out_shm,size);
+		copy_shm(&in_shm,buffer,nSize);
 		op.params[0].value.a = (uintptr_t)encOp;
 		op.params[1].memref.parent = &in_shm;
-		op.params[1].memref.size = nSize;
+		op.params[1].memref.size = sizeof(buffer);  //even though nSize less than sizeof(buffer)
 		op.params[2].memref.parent = &out_shm;
 		op.params[2].memref.size = size;
 		op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,

@@ -189,8 +189,8 @@ int main(int argc, char *argv[])
 		op.params[2].memref.parent = &out_shm;
 		op.params[2].memref.size = size;
 		op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,
-						 TEEC_MEMREF_PARTIAL_INOUT,
-						 TEEC_MEMREF_PARTIAL_INOUT,
+						 TEEC_MEMREF_PARTIAL_INPUT,
+						 TEEC_MEMREF_PARTIAL_OUTPUT,
 						 TEEC_NONE);
 		res = TEEC_InvokeCommand(&sess,TA_CIPHER_UPDATE_CMD,&op,&err_origin);
 		if(res!=TEEC_SUCCESS){

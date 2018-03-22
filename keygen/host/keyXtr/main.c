@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 };
-	uint32_t keyObj=0;
+	TEE_ObjectHandle keyObj = (TEE_ObjectHandle)NULL;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 	if(res!=TEEC_SUCCESS)
 		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
 	
-	keyObj = op.params[2].value.a;	
+	keyObj = (TEE_ObjectHandle)(uintptr_t)op.params[2].value.a;
 	print("TA Invoked\n");
 
 	printf("file open successful:%s,handle:%u\n",key_filename,keyObj);

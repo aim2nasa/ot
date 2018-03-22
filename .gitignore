@@ -10,8 +10,8 @@ hello/host/hello
 persistentObj/host/persistentObj
 storage/host/perObj/perObj
 storage/host/enumFiles/enumFiles
-keygen/host/kg/keygen
-keygen/host/ko/keyopen
-keygen/host/ko/keydel
-keygen/host/ke/keyenum
-keygen/host/ked/ked
+keygen/host/keyGen/keygen
+keygen/host/keyOpen/keyopen
+keygen/host/keyDel/keydel
+keygen/host/keyEnum/keyenum
+keygen/host/keyEncDec/ked

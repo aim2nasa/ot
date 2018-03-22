@@ -237,3 +237,29 @@ TEE_Result ta_key_setkey_oper_cmd(uint32_t param_types, TEE_Param params[4])
 	DMSG("operation(%p) is given with key(0x%x)",(void*)(uintptr_t)params[0].value.a,params[1].value.a);
 	return TEE_SetOperationKey(op,key);
 }
+
+TEE_Result ta_key_get_object_buffer_attribute_cmd(uint32_t param_types, TEE_Param params[4])
+{
+        TEE_ObjectHandle o = VAL2HANDLE(params[0].value.a);
+
+        ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+                          (TEE_PARAM_TYPE_VALUE_INPUT,
+                           TEE_PARAM_TYPE_MEMREF_OUTPUT, TEE_PARAM_TYPE_NONE,
+                           TEE_PARAM_TYPE_NONE));
+
+        return TEE_GetObjectBufferAttribute(o, params[0].value.b,
+                        params[1].memref.buffer, &params[1].memref.size);
+}
+
+TEE_Result ta_key_get_object_value_attribute_cmd(uint32_t param_types,TEE_Param params[4])
+{
+        TEE_ObjectHandle o = VAL2HANDLE(params[0].value.a);
+
+        ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+                          (TEE_PARAM_TYPE_VALUE_INPUT,
+                           TEE_PARAM_TYPE_VALUE_OUTPUT, TEE_PARAM_TYPE_NONE,
+                           TEE_PARAM_TYPE_NONE));
+
+        return TEE_GetObjectValueAttribute(o, params[0].value.b,
+                                   &params[1].value.a, &params[1].value.b);
+}

@@ -15,5 +15,7 @@ TEE_Result ta_key_next_enum_cmd(uint32_t param_types, TEE_Param params[4]);
 TEE_Result ta_key_alloc_oper_cmd(uint32_t param_types, TEE_Param params[4]);
 TEE_Result ta_key_free_oper_cmd(uint32_t param_types, TEE_Param params[4]);
 TEE_Result ta_key_setkey_oper_cmd(uint32_t param_types, TEE_Param params[4]);
+TEE_Result ta_key_get_object_buffer_attribute_cmd(uint32_t param_types, TEE_Param params[4]);
+TEE_Result ta_key_get_object_value_attribute_cmd(uint32_t param_types, TEE_Param params[4]);
 
 #endif

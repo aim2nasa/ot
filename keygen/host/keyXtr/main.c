@@ -1,8 +1,10 @@
 #include <err.h>
 #include <stdio.h>
+#include <tee_api_types.h>
 #include <tee_client_api.h>
 #include <keygen_ta.h>
 #include <string.h>
+#include <assert.h>
 
 #define TEEC_OPERATION_INITIALIZER	{ 0 }
 #define TEE_STORAGE_PRIVATE		0x00000001
@@ -14,6 +16,35 @@ int print(const char *format,...)
 #else
 	return 0;
 #endif
+}
+
+TEEC_Result get_object_buffer_attribute(TEEC_Session *s,
+                                                     TEE_ObjectHandle o,
+                                                     uint32_t attr_id,
+                                                     void *buf, size_t *blen)
+{
+        TEEC_Result res;
+        TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+        uint32_t ret_orig;
+
+        assert((uintptr_t)o <= UINT32_MAX);
+        op.params[0].value.a = (uint32_t)(uintptr_t)o;
+        op.params[0].value.b = attr_id;
+
+        op.params[1].tmpref.buffer = buf;
+        op.params[1].tmpref.size = *blen;
+
+        op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,
+                                         TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
+                                         TEEC_NONE);
+
+        res = TEEC_InvokeCommand(s, TA_KEY_GET_OBJECT_BUFFER_ATTRIBUTE_CMD,
+                                 &op, &ret_orig);
+
+        if (res == TEEC_SUCCESS)
+                *blen = op.params[1].tmpref.size;
+
+        return res;
 }
 
 int main(int argc, char *argv[])

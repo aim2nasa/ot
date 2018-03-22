@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	}else
 		memcpy(key_filename,"test.key",strlen("test.key"));
 
-	print("key filename:%s\n",key_filename);
+	printf("key filename:%s\n",key_filename);
 
 	print("TEEC_InitializeContext...\n");
 	res = TEEC_InitializeContext(NULL,&ctx);

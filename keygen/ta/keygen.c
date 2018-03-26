@@ -279,7 +279,9 @@ TEE_Result ta_key_inject_cmd(uint32_t param_types, TEE_Param params[4])
                           (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_MEMREF_INPUT,
                           TEE_PARAM_TYPE_MEMREF_INPUT,TEE_PARAM_TYPE_NONE));
 
-	key_size = params[2].memref.size * 8;
+	key_size = params[2].memref.size;
+        DMSG("received Key size: %zd bits",key_size);
+
         if((result=TEE_AllocateTransientObject(TEE_TYPE_AES,key_size,&transient_key))!=TEE_SUCCESS){
                 EMSG("Failed to Allocate transient object handle : 0x%x",result);
                 goto cleanup1;
@@ -287,7 +289,7 @@ TEE_Result ta_key_inject_cmd(uint32_t param_types, TEE_Param params[4])
         DMSG("Allocated TransientObject: %p",(void*)transient_key);
 
 	key = params[2].memref.buffer;
-	TEE_InitRefAttribute(&attr,TEE_ATTR_SECRET_VALUE,key,key_size);
+	TEE_InitRefAttribute(&attr,TEE_ATTR_SECRET_VALUE,key,key_size/8);
 
         if((result=TEE_PopulateTransientObject(transient_key,&attr,1))!=TEE_SUCCESS){
                 EMSG("Failed to populate transient object: 0x%x", result);

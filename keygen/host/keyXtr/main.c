@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
 	uint8_t key_filename[256]={ 0 },key_buffer[1024]={ 0 };
 	TEE_ObjectHandle keyObj = (TEE_ObjectHandle)NULL;
 	size_t i,key_size;
+	FILE *fp;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -68,6 +69,7 @@ int main(int argc, char *argv[])
 		memcpy(key_filename,"test.key",strlen("test.key"));
 
 	printf("key filename:%s\n",key_filename);
+	if(argc>2) printf("key dump file:%s\n",argv[2]);
 
 	print("TEEC_InitializeContext...\n");
 	res = TEEC_InitializeContext(NULL,&ctx);
@@ -100,6 +102,15 @@ int main(int argc, char *argv[])
 	res = get_object_buffer_attribute(&sess,keyObj,TEE_ATTR_SECRET_VALUE,key_buffer,&key_size);
 	if(res!=TEEC_SUCCESS){
 		errx(1,"get_object_buffer_attribute failed with code 0x%x",res);
+	}
+	if(argc>2){
+		if((fp=fopen(argv[2],"wb"))!=NULL){
+			int nWrite = fwrite(key_buffer,1,key_size,fp);
+			assert(nWrite==key_size);
+			fclose(fp);
+		}else{
+			printf("fopen failure:%s\n",argv[2]);
+		}
 	}
 	printf("Obtained keySize=%zd\n",key_size);
 	for(i=0;i<key_size;i++) printf("%x ",key_buffer[i]);

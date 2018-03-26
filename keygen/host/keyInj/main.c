@@ -24,17 +24,36 @@ int main(int argc, char *argv[])
 	TEEC_UUID uuid = TA_KEYGEN_UUID;
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
-	uint8_t key_filename[256]={ 0 };
+	uint8_t key_filename[256]={ 0 },stored_key_filename[256]={ 0 };
+	uint8_t key_buffer[32]={0};
+	size_t i,key_size;
+	FILE *fp;
 
-	if(argc>1){
+	if(argc>2){
 		if(strlen(argv[1])>=sizeof(key_filename))
 			errx(1,"key filename is over the buffer limit(%zd)\n",sizeof(key_filename));
 
+		if(strlen(argv[2])>=sizeof(stored_key_filename))
+			errx(1,"stored key filename is over the buffer limit(%zd)\n",sizeof(stored_key_filename));
 		memcpy(key_filename,argv[1],strlen(argv[1]));
-	}else
-		memcpy(key_filename,"test.key",strlen("test.key"));
+		memcpy(stored_key_filename,argv[2],strlen(argv[2]));
+	}else{
+		printf("usage: keyinj <key filename in TEE> <key filename stored in REE>\n");
+		return 1;
+	}
 
-	print("key filename:%s\n",key_filename);
+	print("key filename in TEE:%s\n",key_filename);
+	print("key filename stored in REE:%s\n",key_filename);
+
+	if((fp=fopen(argv[2],"rb"))!=NULL){
+		key_size = 8*fread(key_buffer,1,sizeof(key_buffer),fp);
+		fclose(fp);
+	}else{
+		printf("fopen failure:%s\n",argv[2]);
+	}
+	printf("Obtained keySize=%zd\n",key_size);
+	for(i=0;i<key_size/8;i++) printf("%x ",key_buffer[i]);
+	printf("\n");
 
 	print("TEEC_InitializeContext...\n");
 	res = TEEC_InitializeContext(NULL,&ctx);
@@ -52,19 +71,21 @@ int main(int argc, char *argv[])
 	op.params[0].value.a = TEE_STORAGE_PRIVATE;
 	op.params[1].tmpref.buffer = key_filename;
 	op.params[1].tmpref.size = strlen((const char*)key_filename);
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
+	op.params[2].tmpref.buffer = key_buffer;
+	op.params[2].tmpref.size = key_size;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE);
 
-	res = TEEC_InvokeCommand(&sess,TA_KEY_GEN_CMD,&op,&err_origin);
+	res = TEEC_InvokeCommand(&sess,TA_KEY_INJECT_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
 	print("TA Invoked\n");
 
-	printf("key generated in file:%s\n",key_filename);
+	printf("key(%s) is injected into file(%s) in TEE\n",stored_key_filename,key_filename);
 
 	print("TEEC_FinalizeContext...\n");
 	TEEC_FinalizeContext(&ctx);
 	print("TEEC_FinalizeContext ok\n");
 
-	print("KeyGen end\n");
+	print("KeyInj end\n");
 	return 0;
 }

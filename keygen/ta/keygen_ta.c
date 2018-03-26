@@ -85,6 +85,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 	case TA_KEY_GET_OBJECT_VALUE_ATTRIBUTE_CMD:
 		IMSG("KeyGetObjectValueAttribute CMD\n");
 		return ta_key_get_object_value_attribute_cmd(param_types,params);
+	case TA_KEY_INJECT_CMD:
+		IMSG("KeyInject CMD\n");
+		return ta_key_inject_cmd(param_types,params);
 	case TA_MEM_ALLOC_CMD:
 		IMSG("MemAlloc CMD\n");
 		return ta_mem_alloc_cmd(param_types,params);

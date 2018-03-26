@@ -263,3 +263,57 @@ TEE_Result ta_key_get_object_value_attribute_cmd(uint32_t param_types,TEE_Param 
         return TEE_GetObjectValueAttribute(o, params[0].value.b,
                                    &params[1].value.a, &params[1].value.b);
 }
+
+TEE_Result ta_key_inject_cmd(uint32_t param_types, TEE_Param params[4])
+{
+        TEE_Result result = TEE_SUCCESS;
+        TEE_ObjectHandle transient_key = (TEE_ObjectHandle)NULL;
+        TEE_ObjectHandle persistent_key = (TEE_ObjectHandle)NULL;
+	TEE_Attribute attr;
+        size_t key_size;
+        char *keyFileName = 0;
+	char *key;
+
+        (void)params;
+        ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+                          (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_MEMREF_INPUT,
+                          TEE_PARAM_TYPE_MEMREF_INPUT,TEE_PARAM_TYPE_NONE));
+
+	key_size = params[2].memref.size * 8;
+        if((result=TEE_AllocateTransientObject(TEE_TYPE_AES,key_size,&transient_key))!=TEE_SUCCESS){
+                EMSG("Failed to Allocate transient object handle : 0x%x",result);
+                goto cleanup1;
+        }
+        DMSG("Allocated TransientObject: %p",(void*)transient_key);
+
+	key = params[2].memref.buffer;
+	TEE_InitRefAttribute(&attr,TEE_ATTR_SECRET_VALUE,key,key_size);
+
+        if((result=TEE_PopulateTransientObject(transient_key,&attr,1))!=TEE_SUCCESS){
+                EMSG("Failed to populate transient object: 0x%x", result);
+                goto cleanup2;
+        }
+        DMSG("Key(%zd bit) populate transient object(%p)",key_size,(void*)transient_key);
+
+        DMSG("Input params[0], storage id: %d",params[0].value.a);
+
+        keyFileName = malloc(params[1].memref.size+1);
+        memcpy(keyFileName,params[1].memref.buffer,params[1].memref.size);
+        keyFileName[params[1].memref.size]=0;
+        DMSG("Input params[1], key filename: %s",keyFileName);
+
+        if((result=TEE_CreatePersistentObject(params[0].value.a,
+                                              params[1].memref.buffer,params[1].memref.size,
+                                              flags,transient_key,NULL,0,&persistent_key))!=TEE_SUCCESS){
+                EMSG("Failed to create a persistent key: 0x%x", result);
+                goto cleanup2;
+        }
+        DMSG("%s persistent object(%p) created",keyFileName,(void*)persistent_key);
+
+        TEE_CloseObject(persistent_key);
+cleanup2:
+        TEE_FreeTransientObject(transient_key);
+cleanup1:
+        free(keyFileName);
+        return result;
+}

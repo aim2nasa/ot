@@ -55,8 +55,9 @@ int main(int argc, char *argv[])
 	TEEC_UUID uuid = TA_KEYGEN_UUID;
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
-	uint8_t key_filename[256]={ 0 };
+	uint8_t key_filename[256]={ 0 },key_buffer[1024]={ 0 };
 	TEE_ObjectHandle keyObj = (TEE_ObjectHandle)NULL;
+	size_t i,key_size;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -94,6 +95,15 @@ int main(int argc, char *argv[])
 	print("TA Invoked\n");
 
 	printf("file open successful:%s,handle:%p\n",key_filename,keyObj);
+
+	key_size = sizeof(key_buffer);
+	res = get_object_buffer_attribute(&sess,keyObj,TEE_ATTR_SECRET_VALUE,key_buffer,&key_size);
+	if(res!=TEEC_SUCCESS){
+		errx(1,"get_object_buffer_attribute failed with code 0x%x",res);
+	}
+	printf("Obtained keySize=%zd\n",key_size);
+	for(i=0;i<key_size;i++) printf("%x ",key_buffer[i]);
+	printf("\n");
 	
 	op.params[0].value.a = (uint32_t)(uintptr_t)keyObj;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);

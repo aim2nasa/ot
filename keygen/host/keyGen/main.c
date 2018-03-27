@@ -31,8 +31,10 @@ int main(int argc, char *argv[])
 			errx(1,"key filename is over the buffer limit(%zd)\n",sizeof(key_filename));
 
 		memcpy(key_filename,argv[1],strlen(argv[1]));
-	}else
-		memcpy(key_filename,"test.key",strlen("test.key"));
+	}else{
+                printf("usage: keygen <key filename in TEE>\n");
+                return 1;
+	}
 
 	print("key filename:%s\n",key_filename);
 

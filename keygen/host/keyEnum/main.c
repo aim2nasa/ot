@@ -58,6 +58,8 @@ int main(int argc, char *argv[])
 	memset((void*)id,0,sizeof(id));
 	infoSize = sizeof(info);
 	idSize = sizeof(id);
+
+	printf("tool to list up(enumerate) keys stored in trustzone\n");
 	while(TEEC_SUCCESS==fs_next_enum(&sess,err_origin,info,&infoSize,id,&idSize)){
 		printf("[%d] infoSize:%zd,idSize:%u \n",i++,infoSize,idSize);
 		printf(" id:"); 

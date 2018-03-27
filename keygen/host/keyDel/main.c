@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 
 		memcpy(key_filename,argv[1],strlen(argv[1]));
 	}else{
+		printf("tool to delete key stored in trustzone\n");
 		printf("usage: keydel <key filename in TEE>\n");
 		return 1;
 	}

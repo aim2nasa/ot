@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 			goto cleanup1;
 		}
 	}else{
-		printf("encoding/decoding tool using key stored in trustzone\n");
+		printf("AES encoding/decoding tool using key stored in trustzone\n");
 		printf("usage: ked <keyfile> <inpfile> <outfile> <mode:e/d>:\n");
 		printf("       mode e:encoding, d:decoding\n");
 

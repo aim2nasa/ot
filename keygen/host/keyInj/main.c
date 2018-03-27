@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 		memcpy(key_filename,argv[1],strlen(argv[1]));
 		memcpy(stored_key_filename,argv[2],strlen(argv[2]));
 	}else{
+		printf("tool to inject external AES key(in REE) into trustzone(secure storage)\n");
 		printf("usage: keyinj <key filename in TEE> <key filename stored in REE>\n");
 		return 1;
 	}

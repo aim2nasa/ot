@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 
 		memcpy(key_filename,argv[1],strlen(argv[1]));
         }else{
+		printf("tool to test whether the key in TEE can be opened\n");
                 printf("usage: keyopen <key filename in TEE>\n");
                 return 1;
         }

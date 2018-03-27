@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
 
 		memcpy(key_filename,argv[1],strlen(argv[1]));
 	}else{
+		printf("tool to extract key in trustzone, can dump it in REE as file\n");
 		printf("usage: keyxtr <key filename in TEE> <key dump file in REE (optional)>\n");
 		return 1;
 	}

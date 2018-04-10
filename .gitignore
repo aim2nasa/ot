@@ -17,4 +17,4 @@ keygen/host/keyEnum/keyenum
 keygen/host/keyEncDec/ked
 keygen/host/keyXtr/keyxtr
 keygen/host/keyInj/keyinj
-keygen/host/libokey/libokey.so.1
+keygen/host/libokey/libokey.*

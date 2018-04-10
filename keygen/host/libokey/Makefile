@@ -12,9 +12,11 @@ all: $(BINARY)
 $(BINARY): $(OBJS)
 	@echo $@:$(OBJS)...
 	$(CC) -shared -Wl,-soname,$@ -o $@ $< $(LDADD)
+	ln -s libokey.so.1 libokey.so
 
 okey.o : okey.c
 	@echo $@...
 	$(CC) -fPIC -c okey.c $(CFLAGS)
 clean:
 	rm -f $(OBJS) $(BINARY)
+	rm -rf libokey*

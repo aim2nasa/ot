@@ -4,7 +4,6 @@
 #include <keygen_ta.h>
 
 #define TEEC_OPERATION_INITIALIZER      { 0 }
-#define TEE_STORAGE_PRIVATE		0x00000001
 
 TEEC_Result initializeContext(const char *name,okey *o)
 {

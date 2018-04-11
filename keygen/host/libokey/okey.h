@@ -3,6 +3,8 @@
 
 #include <tee_client_api.h>
 
+#define TEE_STORAGE_PRIVATE		0x00000001
+
 #ifdef __cplusplus
 extern "C" {
 #endif

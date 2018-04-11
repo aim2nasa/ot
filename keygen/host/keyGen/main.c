@@ -5,8 +5,6 @@
 #include <string.h>
 #include <okey.h>
 
-#define TEE_STORAGE_PRIVATE		0x00000001
-
 int print(const char *format,...)
 {
 #ifdef DEBUG

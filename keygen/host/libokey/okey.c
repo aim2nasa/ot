@@ -60,6 +60,16 @@ TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t 
 	return res;
 }
 
+TEEC_Result keyClose(okey *o,uint32_t keyObj)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = keyObj;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
+
+	return TEEC_InvokeCommand(o->session,TA_KEY_CLOSE_CMD,&op,&o->error);
+}
+
 TEEC_Result keyUnlink(okey *o,uint32_t keyObj)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;

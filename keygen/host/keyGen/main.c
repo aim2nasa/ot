@@ -21,8 +21,6 @@ int main(int argc, char *argv[])
 {
 	TEEC_Result res;
 	TEEC_UUID uuid = TA_KEYGEN_UUID;
-	uint32_t err_origin;
-	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 };
 	okey o;
 

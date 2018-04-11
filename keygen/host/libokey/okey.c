@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <keygen_ta.h>
+#include <assert.h>
 
 #define TEEC_OPERATION_INITIALIZER      { 0 }
 TEEC_UUID uuid = TA_KEYGEN_UUID;
@@ -81,4 +82,25 @@ TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE);
 
 	return TEEC_InvokeCommand(o->session,TA_KEY_INJECT_CMD,&op,&o->error);
+}
+
+TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,void *buffer,size_t *bufferSize)
+{
+	TEEC_Result res;
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+        assert((uintptr_t)o <= UINT32_MAX);
+        op.params[0].value.a = keyObj;
+        op.params[0].value.b = attrId;
+
+        op.params[1].tmpref.buffer = buffer;
+        op.params[1].tmpref.size = *bufferSize;
+
+        op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,
+                                         TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
+                                         TEEC_NONE);
+
+        res = TEEC_InvokeCommand(o->session,TA_KEY_GET_OBJECT_BUFFER_ATTRIBUTE_CMD,&op,&o->error);
+        if (res == TEEC_SUCCESS) *bufferSize = op.params[1].tmpref.size;
+        return res;
 }

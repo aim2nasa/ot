@@ -21,6 +21,7 @@ extern "C" {
 	TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName);
 	TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t *keyObj);
 	TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t *keyBuffer,size_t keySize);
+	TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,void *buffer,size_t *bufferSize);
 	TEEC_Result keyUnlink(okey *o,uint32_t keyObj);
 	void closeSession(okey *o);
 	void finalizeContext(okey *o);

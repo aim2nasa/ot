@@ -10,7 +10,7 @@ extern "C" {
 	typedef struct _optee_key_context {
 		TEEC_Context *ctx;
 		TEEC_Session *session;
-		uint32_t returnOrigin;
+		uint32_t error;
 	} okey;
 
 	TEEC_Result initializeContext(const char *name,okey *o);

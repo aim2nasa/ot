@@ -46,12 +46,12 @@ int main(int argc, char *argv[])
 	print("openSession...\n");
 	res = openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.returnOrigin);
+		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
 	print("openSession ok\n");
 
 	res = keyGen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"keyGen failed with code 0x%x origin 0x%x",res,o.returnOrigin);
+		errx(1,"keyGen failed with code 0x%x origin 0x%x",res,o.error);
 	printf("key generated in file:%s\n",key_filename);
 
 	print("finalizeContext...\n");

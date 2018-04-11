@@ -23,7 +23,7 @@ TEEC_Result openSession(okey *o,const TEEC_UUID *destination,uint32_t connection
 {
 	o->session = (TEEC_Session*)malloc(sizeof(TEEC_Session));
 	return TEEC_OpenSession(o->ctx,o->session,destination,connectionMethod,
-		connectionData,operation,&o->returnOrigin);
+		connectionData,operation,&o->error);
 }
 
 void closeSession(okey *o)
@@ -41,5 +41,5 @@ TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName)
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
 
-	return TEEC_InvokeCommand(o->session,TA_KEY_GEN_CMD,&op,&o->returnOrigin);
+	return TEEC_InvokeCommand(o->session,TA_KEY_GEN_CMD,&op,&o->error);
 }

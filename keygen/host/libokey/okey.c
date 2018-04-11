@@ -36,7 +36,7 @@ TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
-	op.params[0].value.a = TEE_STORAGE_PRIVATE;
+	op.params[0].value.a = storageId;
 	op.params[1].tmpref.buffer = (char*)keyFileName;
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
@@ -49,7 +49,7 @@ TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t 
 	TEEC_Result res;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
-	op.params[0].value.a = TEE_STORAGE_PRIVATE;
+	op.params[0].value.a = storageId;
 	op.params[1].tmpref.buffer = (char*)keyFileName;
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_OUTPUT,TEEC_NONE);
@@ -73,7 +73,7 @@ TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
-	op.params[0].value.a = TEE_STORAGE_PRIVATE;
+	op.params[0].value.a = storageId;
 	op.params[1].tmpref.buffer = (char*)keyFileName;
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
 	op.params[2].tmpref.buffer = keyBuffer ;

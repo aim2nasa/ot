@@ -4,6 +4,7 @@
 #include <keygen_ta.h>
 
 #define TEEC_OPERATION_INITIALIZER      { 0 }
+TEEC_UUID uuid = TA_KEYGEN_UUID;
 
 TEEC_Result initializeContext(const char *name,okey *o)
 {
@@ -17,11 +18,11 @@ void finalizeContext(okey *o)
 	free(o->ctx);
 }
 
-TEEC_Result openSession(okey *o,const TEEC_UUID *destination,uint32_t connectionMethod,
+TEEC_Result openSession(okey *o,uint32_t connectionMethod,
 			const void *connectionData,TEEC_Operation *operation)
 {
 	o->session = (TEEC_Session*)malloc(sizeof(TEEC_Session));
-	return TEEC_OpenSession(o->ctx,o->session,destination,connectionMethod,
+	return TEEC_OpenSession(o->ctx,o->session,&uuid,connectionMethod,
 		connectionData,operation,&o->error);
 }
 

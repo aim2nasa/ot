@@ -17,7 +17,6 @@ int print(const char *format,...)
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
-	TEEC_UUID uuid = TA_KEYGEN_UUID;
 	uint8_t key_filename[256]={ 0 };
 	okey o;
 
@@ -41,7 +40,7 @@ int main(int argc, char *argv[])
 	print("initializeContext ok\n");
 
 	print("openSession...\n");
-	res = openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL);
+	res = openSession(&o,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
 	print("openSession ok\n");

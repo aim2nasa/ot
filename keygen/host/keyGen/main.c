@@ -51,17 +51,9 @@ int main(int argc, char *argv[])
 		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.returnOrigin);
 	print("openSession ok\n");
 
-	print("Invoking TA...\n");
-	op.params[0].value.a = TEE_STORAGE_PRIVATE;
-	op.params[1].tmpref.buffer = key_filename;
-	op.params[1].tmpref.size = strlen((const char*)key_filename);
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
-
-	res = TEEC_InvokeCommand(o.session,TA_KEY_GEN_CMD,&op,&err_origin);
+	res = keyGen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
-	print("TA Invoked\n");
-
+		errx(1,"keyGen failed with code 0x%x origin 0x%x",res,o.returnOrigin);
 	printf("key generated in file:%s\n",key_filename);
 
 	print("finalizeContext...\n");

@@ -20,6 +20,7 @@ extern "C" {
 				const void *connectionData,TEEC_Operation *operation);
 	TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName);
 	TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t *keyObj);
+	TEEC_Result keyUnlink(okey *o,uint32_t keyObj);
 	void closeSession(okey *o);
 	void finalizeContext(okey *o);
 

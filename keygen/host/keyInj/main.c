@@ -1,11 +1,7 @@
 #include <err.h>
 #include <stdio.h>
-#include <tee_client_api.h>
-#include <keygen_ta.h>
 #include <string.h>
-
-#define TEEC_OPERATION_INITIALIZER	{ 0 }
-#define TEE_STORAGE_PRIVATE		0x00000001
+#include <okey.h>
 
 int print(const char *format,...)
 {
@@ -19,13 +15,9 @@ int print(const char *format,...)
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
-	TEEC_Context ctx;
-	TEEC_Session sess;
-	TEEC_UUID uuid = TA_KEYGEN_UUID;
-	uint32_t err_origin;
-	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 },stored_key_filename[256]={ 0 };
 	uint8_t key_buffer[32]={0};
+	okey o;
 	size_t i,key_size;
 	FILE *fp;
 
@@ -56,36 +48,27 @@ int main(int argc, char *argv[])
 	for(i=0;i<key_size/8;i++) printf("%x ",key_buffer[i]);
 	printf("\n");
 
-	print("TEEC_InitializeContext...\n");
-	res = TEEC_InitializeContext(NULL,&ctx);
+	print("initializeContext...\n");
+	res = initializeContext(NULL,&o);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_InitializeContext failed with code 0x%x",res);
-	print("TEEC_InitializeContext ok\n");
+		errx(1,"initializeContext failed with code 0x%x",res);
+	print("initializeContext ok\n");
 
-	print("TEEC_OpenSession...\n");
-	res = TEEC_OpenSession(&ctx,&sess,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL,&err_origin);
+	print("openSession...\n");
+	res = openSession(&o,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,err_origin);
-	print("TEEC_OpenSession ok\n");
+		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
+	print("openSession ok\n");
 
-	print("Invoking TA...\n");
-	op.params[0].value.a = TEE_STORAGE_PRIVATE;
-	op.params[1].tmpref.buffer = key_filename;
-	op.params[1].tmpref.size = strlen((const char*)key_filename);
-	op.params[2].tmpref.buffer = key_buffer;
-	op.params[2].tmpref.size = key_size;
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE);
-
-	res = TEEC_InvokeCommand(&sess,TA_KEY_INJECT_CMD,&op,&err_origin);
+	res = keyInject(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,key_buffer,key_size);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
-	print("TA Invoked\n");
+		errx(1,"keyInject failed with code 0x%x origin 0x%x",res,o.error);
 
 	printf("key(%s) is injected into file(%s) in TEE\n",stored_key_filename,key_filename);
 
-	print("TEEC_FinalizeContext...\n");
-	TEEC_FinalizeContext(&ctx);
-	print("TEEC_FinalizeContext ok\n");
+	print("finalizeContext...\n");
+	finalizeContext(&o);
+	print("finalizeContext ok\n");
 
 	print("KeyInj end\n");
 	return 0;

@@ -1,5 +1,10 @@
 #include <stdlib.h>
 #include "okey.h"
+#include <string.h>
+#include <keygen_ta.h>
+
+#define TEEC_OPERATION_INITIALIZER      { 0 }
+#define TEE_STORAGE_PRIVATE		0x00000001
 
 TEEC_Result initializeContext(const char *name,okey *o)
 {
@@ -25,4 +30,16 @@ void closeSession(okey *o)
 {
 	TEEC_CloseSession(o->session);
 	free(o->session);
+}
+
+TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = TEE_STORAGE_PRIVATE;
+	op.params[1].tmpref.buffer = (char*)keyFileName;
+	op.params[1].tmpref.size = strlen((const char*)keyFileName);
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
+
+	return TEEC_InvokeCommand(o->session,TA_KEY_GEN_CMD,&op,&o->returnOrigin);
 }

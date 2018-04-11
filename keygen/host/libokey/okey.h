@@ -16,6 +16,7 @@ extern "C" {
 	TEEC_Result initializeContext(const char *name,okey *o);
 	TEEC_Result openSession(okey *o,const TEEC_UUID *destination,uint32_t connectionMethod,
 				const void *connectionData,TEEC_Operation *operation);
+	TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName);
 	void closeSession(okey *o);
 	void finalizeContext(okey *o);
 

@@ -39,17 +39,17 @@ int main(int argc, char *argv[])
 
 	print("key filename:%s\n",key_filename);
 
-	print("TEEC_InitializeContext...\n");
+	print("initializeContext...\n");
 	res = initializeContext(NULL,&o);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_InitializeContext failed with code 0x%x",res);
-	print("TEEC_InitializeContext ok\n");
+		errx(1,"initializeContext failed with code 0x%x",res);
+	print("initializeContext ok\n");
 
-	print("TEEC_OpenSession...\n");
+	print("openSession...\n");
 	res = openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,o.returnOrigin);
-	print("TEEC_OpenSession ok\n");
+		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.returnOrigin);
+	print("openSession ok\n");
 
 	print("Invoking TA...\n");
 	op.params[0].value.a = TEE_STORAGE_PRIVATE;
@@ -64,9 +64,9 @@ int main(int argc, char *argv[])
 
 	printf("key generated in file:%s\n",key_filename);
 
-	print("TEEC_FinalizeContext...\n");
+	print("finalizeContext...\n");
 	finalizeContext(&o);
-	print("TEEC_FinalizeContext ok\n");
+	print("finalizeContext ok\n");
 
 	print("KeyGen end\n");
 	return 0;

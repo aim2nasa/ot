@@ -1,7 +1,5 @@
 #include <err.h>
 #include <stdio.h>
-#include <tee_client_api.h>
-#include <keygen_ta.h>
 #include <string.h>
 #include <okey.h>
 

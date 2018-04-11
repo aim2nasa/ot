@@ -1,11 +1,7 @@
 #include <err.h>
 #include <stdio.h>
-#include <tee_client_api.h>
-#include <keygen_ta.h>
 #include <string.h>
-
-#define TEEC_OPERATION_INITIALIZER	{ 0 }
-#define TEE_STORAGE_PRIVATE		0x00000001
+#include <okey.h>
 
 int print(const char *format,...)
 {
@@ -19,12 +15,8 @@ int print(const char *format,...)
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
-	TEEC_Context ctx;
-	TEEC_Session sess;
-	TEEC_UUID uuid = TA_KEYGEN_UUID;
-	uint32_t err_origin;
-	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 };
+	okey o;
 	uint32_t keyObj=0;
 
 	if(argc>1){
@@ -40,44 +32,33 @@ int main(int argc, char *argv[])
 
 	print("key filename:%s\n",key_filename);
 
-	print("TEEC_InitializeContext...\n");
-	res = TEEC_InitializeContext(NULL,&ctx);
+	print("initializeContext...\n");
+	res = initializeContext(NULL,&o);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_InitializeContext failed with code 0x%x",res);
-	print("TEEC_InitializeContext ok\n");
+		errx(1,"initializeContext failed with code 0x%x",res);
+	print("initializeContext ok\n");
 
-	print("TEEC_OpenSession...\n");
-	res = TEEC_OpenSession(&ctx,&sess,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL,&err_origin);
+	print("openSession...\n");
+	res = openSession(&o,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,err_origin);
-	print("TEEC_OpenSession ok\n");
+		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
+	print("openSession ok\n");
 
-	print("Invoking TA...\n");
-	op.params[0].value.a = TEE_STORAGE_PRIVATE;
-	op.params[1].tmpref.buffer = key_filename;
-	op.params[1].tmpref.size = strlen((const char*)key_filename);
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_OUTPUT,TEEC_NONE);
-
-	res = TEEC_InvokeCommand(&sess,TA_KEY_OPEN_CMD,&op,&err_origin);
+	res = keyOpen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,&keyObj);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
+		errx(1,"keyOpen failed with code 0x%x origin 0x%x",res,o.error);
 	
-	keyObj = op.params[2].value.a;	
-	print("TA Invoked\n");
-
 	printf("file open successful:%s,handle:%u\n",key_filename,keyObj);
-	
-	op.params[0].value.a = keyObj;
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
-	res = TEEC_InvokeCommand(&sess,TA_KEY_UNLINK_CMD,&op,&err_origin);
+
+	res = keyUnlink(&o,keyObj);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
+		errx(1,"keyUnlink failed with code 0x%x origin 0x%x",res,o.error);
 
 	printf("file unlink successful:%s,handle:%u\n",key_filename,keyObj);
 
-	print("TEEC_FinalizeContext...\n");
-	TEEC_FinalizeContext(&ctx);
-	print("TEEC_FinalizeContext ok\n");
+	print("finalizeContext...\n");
+	finalizeContext(&o);
+	print("finalizeContext ok\n");
 
 	print("KeyOpen end\n");
 	return 0;

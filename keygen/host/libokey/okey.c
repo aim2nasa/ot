@@ -99,7 +99,7 @@ TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,
 	TEEC_Result res;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
-        assert((uintptr_t)o <= UINT32_MAX);
+        assert((uintptr_t)keyObj <= UINT32_MAX);
         op.params[0].value.a = keyObj;
         op.params[0].value.b = attrId;
 

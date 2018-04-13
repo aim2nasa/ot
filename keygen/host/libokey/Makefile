@@ -6,7 +6,7 @@ LDADD += -lteec -L$(TEEC_EXPORT)/lib
 
 LIBNAME = libokey
 BINARY = $(LIBNAME).so.1 
-OBJS = okey.o
+OBJS = okey.o enumHelper.o
 
 all: $(BINARY)
 
@@ -18,6 +18,11 @@ $(BINARY): $(OBJS)
 okey.o : okey.c
 	@echo $@...
 	$(CC) -fPIC -c okey.c $(CFLAGS)
+
+enumHelper.o : enumHelper.c
+	@echo $@...
+	$(CC) -fPIC -c enumHelper.c $(CFLAGS)
+
 clean:
 	rm -f $(OBJS) $(BINARY)
 	rm -rf libokey*

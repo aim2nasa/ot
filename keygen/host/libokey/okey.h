@@ -2,6 +2,7 @@
 #define __OKEY__
 
 #include <tee_client_api.h>
+#include <tee_api_defines.h>
 
 #define TEE_STORAGE_PRIVATE		0x00000001
 

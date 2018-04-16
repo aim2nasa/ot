@@ -21,7 +21,7 @@ int print(const char *format,...)
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
-	uint32_t err_origin;
+	uint32_t enumHandle;
 	uint32_t storage_id = TEE_STORAGE_PRIVATE;
 	size_t infoSize;
 	uint32_t idSize;
@@ -43,12 +43,12 @@ int main(int argc, char *argv[])
 		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
 	print("openSession ok\n");
 
-	res = fs_alloc_enum(o.session,&err_origin);
+	res = fs_alloc_enum(o.session,&enumHandle);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_alloc_enum failed with code 0x%x",res);
-	print("enum handle 0x%x\n",err_origin);
+	print("enum handle 0x%x\n",enumHandle);
 
-	res = fs_start_enum(o.session,err_origin,storage_id);
+	res = fs_start_enum(o.session,enumHandle,storage_id);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_start_enum failed with code 0x%x",res);
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	idSize = sizeof(id);
 
 	printf("tool to list up(enumerate) keys stored in trustzone\n");
-	while(TEEC_SUCCESS==fs_next_enum(o.session,err_origin,info,&infoSize,id,&idSize)){
+	while(TEEC_SUCCESS==fs_next_enum(o.session,enumHandle,info,&infoSize,id,&idSize)){
 		printf("[%d] infoSize:%zd,idSize:%u \n",i++,infoSize,idSize);
 		printf(" id:"); 
 		fileName = malloc(idSize);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 		free(fileName);
 	}
 
-	res = fs_free_enum(o.session,err_origin);
+	res = fs_free_enum(o.session,enumHandle);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_free_enum failed with code 0x%x",res);
 

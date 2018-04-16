@@ -1,5 +1,6 @@
 #include <err.h>
 #include <stdio.h>
+#include <string.h>
 #include <okey.h>
 
 int print(const char *format,...)
@@ -9,6 +10,25 @@ int print(const char *format,...)
 #else
 	return 0;
 #endif
+}
+
+void displayList(eObjList *list)
+{
+	int i=0;
+	char id[TEE_OBJECT_ID_MAX_LEN+1]={0};
+	eObjList *cur=list;
+
+	while(cur){
+		memcpy(id,cur->object->id,cur->object->idSize);
+		id[cur->object->idSize]=0;
+
+		printf("[%d] %s\n",i++,id);
+
+		if(cur->next)
+			cur = cur->next;
+		else
+			cur = NULL;
+	}
 }
 
 int main(int argc, char *argv[])
@@ -34,6 +54,7 @@ int main(int argc, char *argv[])
                 errx(1,"keyEnumObjectList failed with code 0x%x",res);
 
 	printf("list=%p\n",list);
+	displayList(list);
 
 	print("finalizeContext...\n");
 	finalizeContext(&o);

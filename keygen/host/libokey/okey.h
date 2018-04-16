@@ -22,8 +22,8 @@ extern "C" {
 	} eObj;
 
 	typedef struct _enum_object_list {
-		eObj *current;
-		eObj *next;
+		eObj *object;
+		struct _enum_object_list *next;
 	} eObjList;
 
 	TEEC_Result initializeContext(const char *name,okey *o);

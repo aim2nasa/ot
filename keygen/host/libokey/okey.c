@@ -124,6 +124,7 @@ TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList *list)
 	size_t objectInfoSize;
 	uint8_t id[TEE_OBJECT_ID_MAX_LEN];
 	uint32_t idSize;
+	eObjList *prev = NULL;
 
 	list = NULL;
 
@@ -134,6 +135,21 @@ TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList *list)
         if(res!=TEEC_SUCCESS) return res;
 
 	while(TEEC_SUCCESS==fs_next_enum(o->session,o->error,&objectInfo,&objectInfoSize,id,&idSize)){
+		eObj *obj = NULL;
+		eObjList *objectList = (eObjList*)malloc(sizeof(eObjList));
+
+		if(list==NULL) list = objectList; 
+
+		obj = (eObj*)malloc(sizeof(eObj));
+		obj->idSize = idSize;
+		obj->id = (uint8_t*)malloc(idSize);
+		memcpy(obj->id,id,idSize);
+
+		objectList->object = obj;
+		objectList->next = NULL;
+		if(prev) prev->next = objectList;
+
+		prev = objectList;
 	}
 
 	res = fs_free_enum(o->session,o->error);

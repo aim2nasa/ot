@@ -117,28 +117,34 @@ TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,
         return res;
 }
 
-TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList *list)
+TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList **list)
 {
 	TEEC_Result res;
-	TEE_ObjectInfo objectInfo;
-	size_t objectInfoSize;
-	uint8_t id[TEE_OBJECT_ID_MAX_LEN];
+	uint32_t enumHandle;
+	size_t infoSize;
 	uint32_t idSize;
+	uint8_t info[256];
+	uint8_t id[256+1];	//+1 to include null at the end of name
 	eObjList *prev = NULL;
 
-	list = NULL;
+	*list = NULL;
 
-	res = fs_alloc_enum(o->session,&o->error);
+	res = fs_alloc_enum(o->session,&enumHandle);
         if(res!=TEEC_SUCCESS) return res;
 
-	res = fs_start_enum(o->session,o->error,storageId);
+	res = fs_start_enum(o->session,enumHandle,storageId);
         if(res!=TEEC_SUCCESS) return res;
 
-	while(TEEC_SUCCESS==fs_next_enum(o->session,o->error,&objectInfo,&objectInfoSize,id,&idSize)){
+	memset((void*)info,0,sizeof(info));
+	memset((void*)id,0,sizeof(id));
+	infoSize = sizeof(info);
+	idSize = sizeof(id);
+
+	while(TEEC_SUCCESS==fs_next_enum(o->session,enumHandle,info,&infoSize,id,&idSize)){
 		eObj *obj = NULL;
 		eObjList *objectList = (eObjList*)malloc(sizeof(eObjList));
 
-		if(list==NULL) list = objectList; 
+		if(*list==NULL) *list = objectList; 
 
 		obj = (eObj*)malloc(sizeof(eObj));
 		obj->idSize = idSize;
@@ -150,9 +156,11 @@ TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList *list)
 		if(prev) prev->next = objectList;
 
 		prev = objectList;
+		infoSize = sizeof(info);
+		idSize = sizeof(id);
 	}
 
-	res = fs_free_enum(o->session,o->error);
+	res = fs_free_enum(o->session,enumHandle);
         if(res!=TEEC_SUCCESS) return res;
 
 	return res;

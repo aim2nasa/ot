@@ -16,6 +16,16 @@ extern "C" {
 		uint32_t error;
 	} okey;
 
+	typedef struct _enum_object {
+		uint8_t *id;
+		uint32_t idSize;
+	} eObj;
+
+	typedef struct _enum_object_list {
+		eObj *current;
+		eObj *next;
+	} eObjList;
+
 	TEEC_Result initializeContext(const char *name,okey *o);
 	TEEC_Result openSession(okey *o,uint32_t connectionMethod,
 				const void *connectionData,TEEC_Operation *operation);
@@ -23,6 +33,7 @@ extern "C" {
 	TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t *keyObj);
 	TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t *keyBuffer,size_t keySize);
 	TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,void *buffer,size_t *bufferSize);
+	TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList *list);
 	TEEC_Result keyClose(okey *o,uint32_t keyObj);
 	TEEC_Result keyUnlink(okey *o,uint32_t keyObj);
 	void closeSession(okey *o);

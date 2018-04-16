@@ -3,6 +3,8 @@
 #include <string.h>
 #include <keygen_ta.h>
 #include <assert.h>
+#include <tee_api_types.h>
+#include "enumHelper.h"
 
 #define TEEC_OPERATION_INITIALIZER      { 0 }
 TEEC_UUID uuid = TA_KEYGEN_UUID;
@@ -113,4 +115,29 @@ TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,
         res = TEEC_InvokeCommand(o->session,TA_KEY_GET_OBJECT_BUFFER_ATTRIBUTE_CMD,&op,&o->error);
         if (res == TEEC_SUCCESS) *bufferSize = op.params[1].tmpref.size;
         return res;
+}
+
+TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList *list)
+{
+	TEEC_Result res;
+	TEE_ObjectInfo objectInfo;
+	size_t objectInfoSize;
+	uint8_t id[TEE_OBJECT_ID_MAX_LEN];
+	uint32_t idSize;
+
+	list = NULL;
+
+	res = fs_alloc_enum(o->session,&o->error);
+        if(res!=TEEC_SUCCESS) return res;
+
+	res = fs_start_enum(o->session,o->error,storageId);
+        if(res!=TEEC_SUCCESS) return res;
+
+	while(TEEC_SUCCESS==fs_next_enum(o->session,o->error,&objectInfo,&objectInfoSize,id,&idSize)){
+	}
+
+	res = fs_free_enum(o->session,o->error);
+        if(res!=TEEC_SUCCESS) return res;
+
+	return res;
 }

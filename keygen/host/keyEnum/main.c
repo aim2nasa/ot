@@ -5,6 +5,7 @@
 #include <string.h>
 #include "enumHelper.h"
 #include <stdlib.h>
+#include <okey.h>
 
 #define TEE_STORAGE_PRIVATE		0x00000001
 
@@ -20,9 +21,6 @@ int print(const char *format,...)
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
-	TEEC_Context ctx;
-	TEEC_Session sess;
-	TEEC_UUID uuid = TA_KEYGEN_UUID;
 	uint32_t err_origin;
 	uint32_t storage_id = TEE_STORAGE_PRIVATE;
 	size_t infoSize;
@@ -31,25 +29,26 @@ int main(int argc, char *argv[])
 	uint8_t info[256];
 	uint8_t id[256+1];	//+1 to include null at the end of name
 	char *fileName = 0;
+	okey o;
 
-	print("TEEC_InitializeContext...\n");
-	res = TEEC_InitializeContext(NULL,&ctx);
+	print("initializeContext...\n");
+	res = initializeContext(NULL,&o);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_InitializeContext failed with code 0x%x",res);
-	print("TEEC_InitializeContext ok\n");
+		errx(1,"initializeContext failed with code 0x%x",res);
+	print("initializeContext ok\n");
 
-	print("TEEC_OpenSession...\n");
-	res = TEEC_OpenSession(&ctx,&sess,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL,&err_origin);
+	print("openSession...\n");
+	res = openSession(&o,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,err_origin);
-	print("TEEC_OpenSession ok\n");
+		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
+	print("openSession ok\n");
 
-	res = fs_alloc_enum(&sess,&err_origin);
+	res = fs_alloc_enum(o.session,&err_origin);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_alloc_enum failed with code 0x%x",res);
 	print("enum handle 0x%x\n",err_origin);
 
-	res = fs_start_enum(&sess,err_origin,storage_id);
+	res = fs_start_enum(o.session,err_origin,storage_id);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_start_enum failed with code 0x%x",res);
 
@@ -60,7 +59,7 @@ int main(int argc, char *argv[])
 	idSize = sizeof(id);
 
 	printf("tool to list up(enumerate) keys stored in trustzone\n");
-	while(TEEC_SUCCESS==fs_next_enum(&sess,err_origin,info,&infoSize,id,&idSize)){
+	while(TEEC_SUCCESS==fs_next_enum(o.session,err_origin,info,&infoSize,id,&idSize)){
 		printf("[%d] infoSize:%zd,idSize:%u \n",i++,infoSize,idSize);
 		printf(" id:"); 
 		fileName = malloc(idSize);
@@ -78,14 +77,14 @@ int main(int argc, char *argv[])
 		free(fileName);
 	}
 
-	res = fs_free_enum(&sess,err_origin);
+	res = fs_free_enum(o.session,err_origin);
         if(res!=TEEC_SUCCESS)
                 errx(1,"fs_free_enum failed with code 0x%x",res);
 
-	print("TEEC_FinalizeContext...\n");
-	TEEC_FinalizeContext(&ctx);
-	print("TEEC_FinalizeContext ok\n");
+	print("finalizeContext...\n");
+	finalizeContext(&o);
+	print("finalizeContext ok\n");
 
-	print("KeyOpen end\n");
+	print("KeyEnum end\n");
 	return 0;
 }

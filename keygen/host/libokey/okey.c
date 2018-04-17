@@ -3,8 +3,8 @@
 #include <string.h>
 #include <keygen_ta.h>
 #include <assert.h>
-#include <tee_api_types.h>
 #include "enumHelper.h"
+#include <common.h>
 
 #define TEEC_OPERATION_INITIALIZER      { 0 }
 TEEC_UUID uuid = TA_KEYGEN_UUID;
@@ -184,3 +184,27 @@ int keyFreeEnumObjectList(eObjList *list)
 	}
 	return nCount;
 }
+
+TEEC_Result keyAllocOper(okey *o,bool bEnc,size_t keySize,TEE_OperationHandle *encOp)
+{
+	TEEC_Result res;
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[1].value.a = TEE_ALG_AES_ECB_NOPAD;	//does not require IV
+	op.params[2].value.a = bEnc?TEE_MODE_ENCRYPT:TEE_MODE_DECRYPT;
+	op.params[3].value.a = keySize;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_OUTPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT);
+
+	res = TEEC_InvokeCommand(o->session,TA_KEY_ALLOC_OPER_CMD,&op,&o->error);
+	if(res==TEEC_SUCCESS) *encOp = VAL2HANDLE(op.params[0].value.a);
+	return res;
+}
+
+TEEC_Result keyFreeOper(okey *o,TEE_OperationHandle encOp)
+{
+        TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = (uintptr_t)encOp;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
+	return TEEC_InvokeCommand(o->session,TA_KEY_FREE_OPER_CMD,&op,&o->error);
+}       

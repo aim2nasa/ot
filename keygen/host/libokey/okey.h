@@ -3,6 +3,7 @@
 
 #include <tee_client_api.h>
 #include <tee_api_defines.h>
+#include <tee_api_types.h>
 
 #define TEE_STORAGE_PRIVATE		0x00000001
 
@@ -35,6 +36,8 @@ extern "C" {
 	TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,void *buffer,size_t *bufferSize);
 	TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList **list);
 	int keyFreeEnumObjectList(eObjList *list);
+	TEEC_Result keyAllocOper(okey *o,bool bEnc,size_t keySize,TEE_OperationHandle *encOp);
+	TEEC_Result keyFreeOper(okey *o,TEE_OperationHandle encOp);
 	TEEC_Result keyClose(okey *o,uint32_t keyObj);
 	TEEC_Result keyUnlink(okey *o,uint32_t keyObj);
 	void closeSession(okey *o);

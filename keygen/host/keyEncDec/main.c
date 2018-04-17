@@ -113,16 +113,11 @@ int main(int argc, char *argv[])
 	printf("key obtained:%s,handle:0x%x\n",key_filename,keyObj);
 
 	//Allocate operation
-	op.params[1].value.a = TEE_ALG_AES_ECB_NOPAD;	//does not require IV
-	op.params[2].value.a = bEnc?TEE_MODE_ENCRYPT:TEE_MODE_DECRYPT;
-	op.params[3].value.a = keySize;
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_OUTPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT);
-	res = TEEC_InvokeCommand(o.session,TA_KEY_ALLOC_OPER_CMD,&op,&err_origin);
+	res = keyAllocOper(&o,bEnc,keySize,&encOp);
 	if(res!=TEEC_SUCCESS){
-		printf("TA_KEY_ALLOC_OPER_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("keyAllocOper failed with code 0x%x origin 0x%x\n",res,o.error);
 		goto cleanup3;
 	}
-	encOp = VAL2HANDLE(op.params[0].value.a);
 	printf("allocateOperation handle:%p\n",encOp);
 
 	//inject key for the allocated operation
@@ -203,11 +198,9 @@ int main(int argc, char *argv[])
 	printf("\n");
 
 	//Free Allocated operation
-	op.params[0].value.a = (uintptr_t)encOp;
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
-	res = TEEC_InvokeCommand(o.session,TA_KEY_FREE_OPER_CMD,&op,&err_origin);
+	res = keyFreeOper(&o,encOp);
 	if(res!=TEEC_SUCCESS){
-		printf("TA_KEY_FREE_OPER_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("keyFreeOper failed with code 0x%x origin 0x%x\n",res,o.error);
 		goto cleanup3;
 	}
 	printf("allocateOperation handle:%p freed\n",encOp);

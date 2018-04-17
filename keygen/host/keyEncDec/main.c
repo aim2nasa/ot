@@ -121,12 +121,9 @@ int main(int argc, char *argv[])
 	printf("allocateOperation handle:%p\n",encOp);
 
 	//inject key for the allocated operation
-	op.params[0].value.a = (uintptr_t)encOp;
-	op.params[1].value.a = keyObj;
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE);
-	res = TEEC_InvokeCommand(o.session,TA_KEY_SETKEY_OPER_CMD,&op,&err_origin);
+	res = keySetkeyOper(&o,encOp,keyObj);
 	if(res!=TEEC_SUCCESS){
-		printf("TA_KEY_ALLOC_OPER_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("keySetkeyOper failed with code 0x%x origin 0x%x\n",res,o.error);
 		goto cleanup3;
 	}
 	printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);

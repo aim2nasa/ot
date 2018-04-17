@@ -105,16 +105,11 @@ int main(int argc, char *argv[])
 	}
 
 	//Open persistent key object
-	op.params[0].value.a = TEE_STORAGE_PRIVATE;
-	op.params[1].tmpref.buffer = key_filename;
-	op.params[1].tmpref.size = strlen((const char*)key_filename);
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_OUTPUT,TEEC_NONE);
-	res = TEEC_InvokeCommand(o.session,TA_KEY_OPEN_CMD,&op,&err_origin);
+	res = keyOpen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,&keyObj);
 	if(res!=TEEC_SUCCESS){
-		printf("TA_KEY_OPEN_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("keyOpen failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
 	}
-	keyObj = op.params[2].value.a;	
 	printf("key obtained:%s,handle:0x%x\n",key_filename,keyObj);
 
 	//Allocate operation

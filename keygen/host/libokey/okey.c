@@ -7,7 +7,6 @@
 #include <common.h>
 
 #define TEEC_OPERATION_INITIALIZER      { 0 }
-#define TEE_AES_BLOCK_SIZE             16UL
 
 TEEC_UUID uuid = TA_KEYGEN_UUID;
 

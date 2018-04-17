@@ -6,6 +6,7 @@
 #include <tee_api_types.h>
 
 #define TEE_STORAGE_PRIVATE		0x00000001
+#define TEE_AES_BLOCK_SIZE             16UL
 
 #ifdef __cplusplus
 extern "C" {

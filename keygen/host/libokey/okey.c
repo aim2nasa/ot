@@ -7,7 +7,27 @@
 #include <common.h>
 
 #define TEEC_OPERATION_INITIALIZER      { 0 }
+#define TEE_AES_BLOCK_SIZE             16UL
+
 TEEC_UUID uuid = TA_KEYGEN_UUID;
+
+static TEEC_SharedMemory in_shm={
+        .flags = TEEC_MEM_INPUT | TEEC_MEM_OUTPUT
+};
+
+static TEEC_SharedMemory out_shm={
+        .flags = TEEC_MEM_INPUT | TEEC_MEM_OUTPUT
+};
+
+static void copy_shm(TEEC_SharedMemory *shm,void *src,size_t n)
+{
+        memcpy(shm->buffer,src,n);
+}
+
+static void set_shm(TEEC_SharedMemory *shm,size_t n)
+{
+        memset(shm->buffer,0,n);
+}
 
 TEEC_Result allocShm(okey *o,TEEC_SharedMemory *shm,size_t size)
 {
@@ -240,4 +260,30 @@ TEEC_Result cipherInit(okey *o,TEE_OperationHandle encOp)
         op.params[1].tmpref.size = 0;
         op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
         return TEEC_InvokeCommand(o->session,TA_CIPHER_INIT_CMD,&op,&o->error);
+}
+
+TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t inBufSize)
+{
+	if((inBufSize%TEE_AES_BLOCK_SIZE)!=0)
+		return TEE_ERROR_NOT_SUPPORTED; 
+
+	if(inBufSize>TEE_AES_BLOCK_SIZE)
+		return TEE_ERROR_BAD_PARAMETERS;
+
+        TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	set_shm(&in_shm,TEE_AES_BLOCK_SIZE);
+	set_shm(&out_shm,TEE_AES_BLOCK_SIZE);
+	copy_shm(&in_shm,inBuf,inBufSize);
+
+	op.params[0].value.a = (uintptr_t)encOp;
+	op.params[1].memref.parent = &in_shm;
+	op.params[1].memref.size = TEE_AES_BLOCK_SIZE;
+	op.params[2].memref.parent = &out_shm;
+	op.params[2].memref.size = TEE_AES_BLOCK_SIZE;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,
+					 TEEC_MEMREF_PARTIAL_INPUT,
+					 TEEC_MEMREF_PARTIAL_OUTPUT,
+					 TEEC_NONE);
+	return TEEC_InvokeCommand(o->session,TA_CIPHER_UPDATE_CMD,&op,&o->error);
 }

@@ -54,9 +54,6 @@ static void set_shm(TEEC_SharedMemory *shm,size_t n)
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
-	TEEC_Context ctx;
-	TEEC_Session sess;
-	TEEC_UUID uuid = TA_KEYGEN_UUID;
 	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 },inp_filename[256]={ 0 },out_filename[256]={ 0 };
@@ -68,6 +65,7 @@ int main(int argc, char *argv[])
 	TEE_OperationHandle encOp;
 	bool bEnc = true;
 	struct stat inpFileStat;
+	okey o;
 
 	if(argc>4){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -94,15 +92,15 @@ int main(int argc, char *argv[])
 	printf("mode:");
 	if(bEnc) printf("encoding\n"); else printf("decoding\n");
 
-	res = TEEC_InitializeContext(NULL,&ctx);
+	res = initializeContext(NULL,&o);
 	if(res!=TEEC_SUCCESS){
-		printf("TEEC_InitializeContext failed with code 0x%x\n",res);
+		printf("initializeContext failed with code 0x%x\n",res);
 		goto cleanup1;
 	}
 
-	res = TEEC_OpenSession(&ctx,&sess,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL,&err_origin);
+	res = openSession(&o,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS){
-		printf("TEEC_OpenSession failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("openSession failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup2;
 	}
 
@@ -111,7 +109,7 @@ int main(int argc, char *argv[])
 	op.params[1].tmpref.buffer = key_filename;
 	op.params[1].tmpref.size = strlen((const char*)key_filename);
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_OUTPUT,TEEC_NONE);
-	res = TEEC_InvokeCommand(&sess,TA_KEY_OPEN_CMD,&op,&err_origin);
+	res = TEEC_InvokeCommand(o.session,TA_KEY_OPEN_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS){
 		printf("TA_KEY_OPEN_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
@@ -124,7 +122,7 @@ int main(int argc, char *argv[])
 	op.params[2].value.a = bEnc?TEE_MODE_ENCRYPT:TEE_MODE_DECRYPT;
 	op.params[3].value.a = keySize;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_OUTPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT);
-	res = TEEC_InvokeCommand(&sess,TA_KEY_ALLOC_OPER_CMD,&op,&err_origin);
+	res = TEEC_InvokeCommand(o.session,TA_KEY_ALLOC_OPER_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS){
 		printf("TA_KEY_ALLOC_OPER_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
@@ -136,7 +134,7 @@ int main(int argc, char *argv[])
 	op.params[0].value.a = (uintptr_t)encOp;
 	op.params[1].value.a = keyObj;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE);
-	res = TEEC_InvokeCommand(&sess,TA_KEY_SETKEY_OPER_CMD,&op,&err_origin);
+	res = TEEC_InvokeCommand(o.session,TA_KEY_SETKEY_OPER_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS){
 		printf("TA_KEY_ALLOC_OPER_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
@@ -144,12 +142,12 @@ int main(int argc, char *argv[])
 	printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
 	
 	//Initialize symmetric cipher operation
-	if((res=allocate_shm(&ctx,&in_shm,size))!=TEEC_SUCCESS) {
+	if((res=allocate_shm(o.ctx,&in_shm,size))!=TEEC_SUCCESS) {
 		printf("allocate_shm faild with code 0x%x\n",res);
 		goto cleanup3;
 	}
 	printf("shared memory buffer:%p,size:%zd\n",in_shm.buffer,in_shm.size);
-	if((res=allocate_shm(&ctx,&out_shm,size))!=TEEC_SUCCESS) {
+	if((res=allocate_shm(o.ctx,&out_shm,size))!=TEEC_SUCCESS) {
 		printf("allocate_shm faild with code 0x%x\n",res);
 		goto cleanup3;
 	}
@@ -158,7 +156,7 @@ int main(int argc, char *argv[])
 	op.params[1].tmpref.buffer = 0;
 	op.params[1].tmpref.size = 0;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
-	res = TEEC_InvokeCommand(&sess,TA_CIPHER_INIT_CMD,&op,&err_origin);
+	res = TEEC_InvokeCommand(o.session,TA_CIPHER_INIT_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS){
 		printf("TA_CIPHER_INIT_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
@@ -195,7 +193,7 @@ int main(int argc, char *argv[])
 						 TEEC_MEMREF_PARTIAL_INPUT,
 						 TEEC_MEMREF_PARTIAL_OUTPUT,
 						 TEEC_NONE);
-		res = TEEC_InvokeCommand(&sess,TA_CIPHER_UPDATE_CMD,&op,&err_origin);
+		res = TEEC_InvokeCommand(o.session,TA_CIPHER_UPDATE_CMD,&op,&err_origin);
 		if(res!=TEEC_SUCCESS){
 			printf("TA_CIPHER_UPDATE_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 			goto cleanup4;
@@ -212,7 +210,7 @@ int main(int argc, char *argv[])
 	//Free Allocated operation
 	op.params[0].value.a = (uintptr_t)encOp;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
-	res = TEEC_InvokeCommand(&sess,TA_KEY_FREE_OPER_CMD,&op,&err_origin);
+	res = TEEC_InvokeCommand(o.session,TA_KEY_FREE_OPER_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS){
 		printf("TA_KEY_FREE_OPER_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
@@ -222,7 +220,7 @@ int main(int argc, char *argv[])
 	//Close key
 	op.params[0].value.a = keyObj;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
-	res = TEEC_InvokeCommand(&sess,TA_KEY_CLOSE_CMD,&op,&err_origin);
+	res = TEEC_InvokeCommand(o.session,TA_KEY_CLOSE_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS){
 		printf("TA_KEY_CLOSE_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
@@ -234,9 +232,9 @@ cleanup4:
 	free_shm(&out_shm);
 	free_shm(&in_shm);
 cleanup3:
-	TEEC_CloseSession(&sess);
+	closeSession(&o);
 cleanup2:
-	TEEC_FinalizeContext(&ctx);
+	finalizeContext(&o);
 cleanup1:
 	print("KeyEnc end\n");
 	return 0;

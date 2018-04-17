@@ -9,6 +9,18 @@
 #define TEEC_OPERATION_INITIALIZER      { 0 }
 TEEC_UUID uuid = TA_KEYGEN_UUID;
 
+TEEC_Result allocShm(okey *o,TEEC_SharedMemory *shm,size_t size)
+{
+	shm->buffer = NULL;
+	shm->size = size;
+	return TEEC_AllocateSharedMemory(o->ctx,shm);
+}
+
+void freeShm(TEEC_SharedMemory *shm)
+{
+	TEEC_ReleaseSharedMemory(shm);
+}
+
 TEEC_Result initializeContext(const char *name,okey *o)
 {
 	o->ctx = (TEEC_Context*)malloc(sizeof(TEEC_Context));

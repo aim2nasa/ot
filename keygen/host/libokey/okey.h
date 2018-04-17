@@ -41,6 +41,8 @@ extern "C" {
 	TEEC_Result keySetkeyOper(okey *o,TEE_OperationHandle encOp,uint32_t keyObj);
 	TEEC_Result keyClose(okey *o,uint32_t keyObj);
 	TEEC_Result keyUnlink(okey *o,uint32_t keyObj);
+	TEEC_Result allocShm(okey *o,TEEC_SharedMemory *shm,size_t size);
+	void freeShm(TEEC_SharedMemory *shm);
 	void closeSession(okey *o);
 	void finalizeContext(okey *o);
 

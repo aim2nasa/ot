@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 	}
 	printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
 	
-	res = cipherInit(&o,encOp);
+	res = cipherInit(&o,encOp,1);
 	if(res!=TEEC_SUCCESS){
 		printf("cipherInit failed with code 0x%x origin 0x%x\n",res,o.error);
 		goto cleanup3;

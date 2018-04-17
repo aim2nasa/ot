@@ -43,6 +43,7 @@ void freeShm(TEEC_SharedMemory *shm)
 TEEC_Result initializeContext(const char *name,okey *o)
 {
 	o->ctx = (TEEC_Context*)malloc(sizeof(TEEC_Context));
+	o->shMemSize = TEE_AES_BLOCK_SIZE;	//default shared memory size
 	return TEEC_InitializeContext(name,o->ctx);
 }
 
@@ -250,14 +251,17 @@ TEEC_Result keySetkeyOper(okey *o,TEE_OperationHandle encOp,uint32_t keyObj)
         return TEEC_InvokeCommand(o->session,TA_KEY_SETKEY_OPER_CMD,&op,&o->error);
 }
 
-TEEC_Result cipherInit(okey *o,TEE_OperationHandle encOp)
+TEEC_Result cipherInit(okey *o,TEE_OperationHandle encOp,uint8_t shMemFactor)
 {
-	TEEC_Result res;
-	if((res=allocShm(o,&in_shm,TEE_AES_BLOCK_SIZE))!=TEEC_SUCCESS) goto cleanup1;
-	if((res=allocShm(o,&out_shm,TEE_AES_BLOCK_SIZE))!=TEEC_SUCCESS) goto cleanup2;
+	if(shMemFactor==0) return TEE_ERROR_BAD_PARAMETERS;
 
-	set_shm(&in_shm,TEE_AES_BLOCK_SIZE);
-	set_shm(&out_shm,TEE_AES_BLOCK_SIZE);
+	TEEC_Result res;
+	o->shMemSize = TEE_AES_BLOCK_SIZE*shMemFactor;
+	if((res=allocShm(o,&in_shm,o->shMemSize))!=TEEC_SUCCESS) goto cleanup1;
+	if((res=allocShm(o,&out_shm,o->shMemSize))!=TEEC_SUCCESS) goto cleanup2;
+
+	set_shm(&in_shm,o->shMemSize);
+	set_shm(&out_shm,o->shMemSize);
 
         TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
@@ -278,7 +282,7 @@ TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t
 	if((inBufSize%TEE_AES_BLOCK_SIZE)!=0)
 		return TEE_ERROR_NOT_SUPPORTED; 
 
-	if(inBufSize>TEE_AES_BLOCK_SIZE)
+	if(inBufSize>o->shMemSize)
 		return TEE_ERROR_BAD_PARAMETERS;
 
         TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
@@ -287,9 +291,9 @@ TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t
 
 	op.params[0].value.a = (uintptr_t)encOp;
 	op.params[1].memref.parent = &in_shm;
-	op.params[1].memref.size = TEE_AES_BLOCK_SIZE;
+	op.params[1].memref.size = o->shMemSize;
 	op.params[2].memref.parent = &out_shm;
-	op.params[2].memref.size = TEE_AES_BLOCK_SIZE;
+	op.params[2].memref.size = o->shMemSize;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,
 					 TEEC_MEMREF_PARTIAL_INPUT,
 					 TEEC_MEMREF_PARTIAL_OUTPUT,

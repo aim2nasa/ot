@@ -16,6 +16,7 @@ extern "C" {
 		TEEC_Context *ctx;
 		TEEC_Session *session;
 		uint32_t error;
+		size_t shMemSize;
 	} okey;
 
 	typedef struct _enum_object {
@@ -44,7 +45,7 @@ extern "C" {
 	TEEC_Result keyUnlink(okey *o,uint32_t keyObj);
 	TEEC_Result allocShm(okey *o,TEEC_SharedMemory *shm,size_t size);
 	void freeShm(TEEC_SharedMemory *shm);
-	TEEC_Result cipherInit(okey *o,TEE_OperationHandle encOp);
+	TEEC_Result cipherInit(okey *o,TEE_OperationHandle encOp,uint8_t shMemFactor);
 	TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t inBufSize);
 	void cipherClose();
 	TEEC_SharedMemory *outSharedMemory();

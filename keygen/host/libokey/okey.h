@@ -38,6 +38,7 @@ extern "C" {
 	int keyFreeEnumObjectList(eObjList *list);
 	TEEC_Result keyAllocOper(okey *o,bool bEnc,size_t keySize,TEE_OperationHandle *encOp);
 	TEEC_Result keyFreeOper(okey *o,TEE_OperationHandle encOp);
+	TEEC_Result keySetkeyOper(okey *o,TEE_OperationHandle encOp,uint32_t keyObj);
 	TEEC_Result keyClose(okey *o,uint32_t keyObj);
 	TEEC_Result keyUnlink(okey *o,uint32_t keyObj);
 	void closeSession(okey *o);

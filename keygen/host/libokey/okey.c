@@ -208,3 +208,13 @@ TEEC_Result keyFreeOper(okey *o,TEE_OperationHandle encOp)
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
 	return TEEC_InvokeCommand(o->session,TA_KEY_FREE_OPER_CMD,&op,&o->error);
 }       
+
+TEEC_Result keySetkeyOper(okey *o,TEE_OperationHandle encOp,uint32_t keyObj)
+{
+        TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+        op.params[0].value.a = (uintptr_t)encOp;
+        op.params[1].value.a = keyObj;
+        op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE);
+        return TEEC_InvokeCommand(o->session,TA_KEY_SETKEY_OPER_CMD,&op,&o->error);
+}

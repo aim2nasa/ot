@@ -300,3 +300,9 @@ TEEC_SharedMemory *outSharedMemory()
 {
 	return &out_shm;
 }
+
+void cipherClose()
+{
+	freeShm(&in_shm);
+	freeShm(&out_shm);
+}

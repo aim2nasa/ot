@@ -123,6 +123,7 @@ int main(int argc, char *argv[])
 		}
 		printf("[%zd] ",outSharedMemory()->size);
 	}
+	cipherClose();
 	printf("\n");
 
 	//Free Allocated operation

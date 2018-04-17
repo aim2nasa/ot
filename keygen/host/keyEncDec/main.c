@@ -54,7 +54,6 @@ static void set_shm(TEEC_SharedMemory *shm,size_t n)
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
-	uint32_t err_origin;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 },inp_filename[256]={ 0 },out_filename[256]={ 0 };
 	uint8_t buffer[TEE_AES_BLOCK_SIZE]={ 0 };
@@ -100,14 +99,14 @@ int main(int argc, char *argv[])
 
 	res = openSession(&o,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS){
-		printf("openSession failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("openSession failed with code 0x%x origin 0x%x\n",res,o.error);
 		goto cleanup2;
 	}
 
 	//Open persistent key object
 	res = keyOpen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,&keyObj);
 	if(res!=TEEC_SUCCESS){
-		printf("keyOpen failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("keyOpen failed with code 0x%x origin 0x%x\n",res,o.error);
 		goto cleanup3;
 	}
 	printf("key obtained:%s,handle:0x%x\n",key_filename,keyObj);
@@ -143,9 +142,9 @@ int main(int argc, char *argv[])
 	op.params[1].tmpref.buffer = 0;
 	op.params[1].tmpref.size = 0;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
-	res = TEEC_InvokeCommand(o.session,TA_CIPHER_INIT_CMD,&op,&err_origin);
+	res = TEEC_InvokeCommand(o.session,TA_CIPHER_INIT_CMD,&op,&o.error);
 	if(res!=TEEC_SUCCESS){
-		printf("TA_CIPHER_INIT_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("TA_CIPHER_INIT_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,o.error);
 		goto cleanup3;
 	}
 	printf("Cipher operation Initialized with %p\n",encOp);
@@ -180,9 +179,9 @@ int main(int argc, char *argv[])
 						 TEEC_MEMREF_PARTIAL_INPUT,
 						 TEEC_MEMREF_PARTIAL_OUTPUT,
 						 TEEC_NONE);
-		res = TEEC_InvokeCommand(o.session,TA_CIPHER_UPDATE_CMD,&op,&err_origin);
+		res = TEEC_InvokeCommand(o.session,TA_CIPHER_UPDATE_CMD,&op,&o.error);
 		if(res!=TEEC_SUCCESS){
-			printf("TA_CIPHER_UPDATE_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+			printf("TA_CIPHER_UPDATE_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,o.error);
 			goto cleanup4;
 		}
 		if((nSize=fwrite(out_shm.buffer,1,op.params[2].memref.size,out_fp))!=op.params[2].memref.size) {
@@ -205,7 +204,7 @@ int main(int argc, char *argv[])
 	//Close key
 	res = keyClose(&o,keyObj);
 	if(res!=TEEC_SUCCESS){
-		printf("keyClose failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("keyClose failed with code 0x%x origin 0x%x\n",res,o.error);
 		goto cleanup3;
 	}
 

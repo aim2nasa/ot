@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
 
 	printf("list=%p\n",list);
 	displayList(list);
+	printf("%d eliments in list(%p) have freed\n",keyFreeEnumObjectList(list),list);
 
 	print("finalizeContext...\n");
 	finalizeContext(&o);

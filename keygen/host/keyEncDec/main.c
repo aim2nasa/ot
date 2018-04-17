@@ -213,11 +213,9 @@ int main(int argc, char *argv[])
 	printf("allocateOperation handle:%p freed\n",encOp);
 	
 	//Close key
-	op.params[0].value.a = keyObj;
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
-	res = TEEC_InvokeCommand(o.session,TA_KEY_CLOSE_CMD,&op,&err_origin);
+	res = keyClose(&o,keyObj);
 	if(res!=TEEC_SUCCESS){
-		printf("TA_KEY_CLOSE_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,err_origin);
+		printf("keyClose failed with code 0x%x origin 0x%x\n",res,err_origin);
 		goto cleanup3;
 	}
 

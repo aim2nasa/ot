@@ -1,17 +1,8 @@
 #include <err.h>
 #include <stdio.h>
-#include <tee_client_api.h>
-#include <tee_api_defines.h>
-#include <tee_api_types.h>
-#include <keygen_ta.h>
 #include <string.h>
-#include <common.h>
 #include <sys/stat.h>
 #include <okey.h>
-
-#define TEEC_OPERATION_INITIALIZER	{ 0 }
-#define TEE_STORAGE_PRIVATE		0x00000001
-#define TEE_AES_BLOCK_SIZE             16UL
 
 int print(const char *format,...)
 {
@@ -25,13 +16,11 @@ int print(const char *format,...)
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
-	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint8_t key_filename[256]={ 0 },inp_filename[256]={ 0 },out_filename[256]={ 0 };
 	uint8_t buffer[TEE_AES_BLOCK_SIZE]={ 0 };
 	uint32_t keyObj=0;
 	FILE *fp,*out_fp;
 	size_t nSize,keySize=256;
-	size_t size=TEE_AES_BLOCK_SIZE; 		//shared memory buffer size
 	TEE_OperationHandle encOp;
 	bool bEnc = true;
 	struct stat inpFileStat;

@@ -22,23 +22,6 @@ int print(const char *format,...)
 #endif
 }
 
-static TEEC_SharedMemory in_shm={
-	.flags = TEEC_MEM_INPUT | TEEC_MEM_OUTPUT
-};
-static TEEC_SharedMemory out_shm={
-	.flags = TEEC_MEM_INPUT | TEEC_MEM_OUTPUT
-};
-
-static void copy_shm(TEEC_SharedMemory *shm,void *src,size_t n)
-{
-	memcpy(shm->buffer,src,n);
-}
-
-static void set_shm(TEEC_SharedMemory *shm,size_t n)
-{
-	memset(shm->buffer,0,n);
-}
-
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
@@ -115,18 +98,6 @@ int main(int argc, char *argv[])
 	}
 	printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
 	
-	//Initialize symmetric cipher operation
-	if((res=allocShm(&o,&in_shm,size))!=TEEC_SUCCESS) {
-		printf("allocShm failed with code 0x%x\n",res);
-		goto cleanup3;
-	}
-	printf("shared memory buffer:%p,size:%zd\n",in_shm.buffer,in_shm.size);
-	if((res=allocShm(&o,&out_shm,size))!=TEEC_SUCCESS) {
-		printf("allocShm failed with code 0x%x\n",res);
-		goto cleanup3;
-	}
-	printf("shared memory buffer:%p,size:%zd\n",out_shm.buffer,out_shm.size);
-
 	res = cipherInit(&o,encOp);
 	if(res!=TEEC_SUCCESS){
 		printf("cipherInit failed with code 0x%x origin 0x%x\n",res,o.error);
@@ -152,29 +123,16 @@ int main(int argc, char *argv[])
 
 	while((nSize=fread(buffer,1,sizeof(buffer),fp))>0) { //read as much as TEE_AES_BLOCK_SIZE
 		//Cipher update
-		set_shm(&in_shm,size);
-		set_shm(&out_shm,size);
-		copy_shm(&in_shm,buffer,nSize);
-		op.params[0].value.a = (uintptr_t)encOp;
-		op.params[1].memref.parent = &in_shm;
-		op.params[1].memref.size = sizeof(buffer);  //even though nSize less than sizeof(buffer)
-		op.params[2].memref.parent = &out_shm;
-		op.params[2].memref.size = size;
-		op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,
-						 TEEC_MEMREF_PARTIAL_INPUT,
-						 TEEC_MEMREF_PARTIAL_OUTPUT,
-						 TEEC_NONE);
-		res = TEEC_InvokeCommand(o.session,TA_CIPHER_UPDATE_CMD,&op,&o.error);
+		res = cipherUpdate(&o,encOp,buffer,nSize);
 		if(res!=TEEC_SUCCESS){
-			printf("TA_CIPHER_UPDATE_CMD TEEC_InvokeCommand failed with code 0x%x origin 0x%x\n",res,o.error);
+			printf("cipherUpdate failed with code 0x%x origin 0x%x\n",res,o.error);
 			goto cleanup4;
 		}
-		if((nSize=fwrite(out_shm.buffer,1,op.params[2].memref.size,out_fp))!=op.params[2].memref.size) {
-			printf("error, fwrite nSize:%zd != op.params[2].memref.size:%zd\n",nSize,op.params[2].memref.size);
-
+		if((nSize=fwrite(outSharedMemory()->buffer,1,outSharedMemory()->size,out_fp))!=outSharedMemory()->size) {
+			printf("error, fwrite nSize:%zd != outSharedMemory()->size:%zd\n",nSize,outSharedMemory()->size);
 			goto cleanup4;
 		}
-		printf("[%zd] ",op.params[2].memref.size);
+		printf("[%zd] ",outSharedMemory()->size);
 	}
 	printf("\n");
 
@@ -196,8 +154,6 @@ int main(int argc, char *argv[])
 cleanup4:
 	fclose(out_fp);
 	fclose(fp);
-	freeShm(&out_shm);
-	freeShm(&in_shm);
 cleanup3:
 	closeSession(&o);
 cleanup2:

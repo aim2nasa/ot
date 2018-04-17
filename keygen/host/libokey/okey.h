@@ -45,6 +45,7 @@ extern "C" {
 	void freeShm(TEEC_SharedMemory *shm);
 	TEEC_Result cipherInit(okey *o,TEE_OperationHandle encOp);
 	TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t inBufSize);
+	TEEC_SharedMemory *outSharedMemory();
 	void closeSession(okey *o);
 	void finalizeContext(okey *o);
 

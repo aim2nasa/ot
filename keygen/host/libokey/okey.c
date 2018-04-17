@@ -296,3 +296,8 @@ TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t
 					 TEEC_NONE);
 	return TEEC_InvokeCommand(o->session,TA_CIPHER_UPDATE_CMD,&op,&o->error);
 }
+
+TEEC_SharedMemory *outSharedMemory()
+{
+	return &out_shm;
+}

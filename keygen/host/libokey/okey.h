@@ -43,6 +43,7 @@ extern "C" {
 	TEEC_Result keyUnlink(okey *o,uint32_t keyObj);
 	TEEC_Result allocShm(okey *o,TEEC_SharedMemory *shm,size_t size);
 	void freeShm(TEEC_SharedMemory *shm);
+	TEEC_Result cipherInit(okey *o,TEE_OperationHandle encOp);
 	void closeSession(okey *o);
 	void finalizeContext(okey *o);
 

@@ -256,6 +256,9 @@ TEEC_Result cipherInit(okey *o,TEE_OperationHandle encOp)
 	if((res=allocShm(o,&in_shm,TEE_AES_BLOCK_SIZE))!=TEEC_SUCCESS) goto cleanup1;
 	if((res=allocShm(o,&out_shm,TEE_AES_BLOCK_SIZE))!=TEEC_SUCCESS) goto cleanup2;
 
+	set_shm(&in_shm,TEE_AES_BLOCK_SIZE);
+	set_shm(&out_shm,TEE_AES_BLOCK_SIZE);
+
         TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
         op.params[0].value.a = (uintptr_t)encOp;
@@ -280,8 +283,6 @@ TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t
 
         TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
-	set_shm(&in_shm,TEE_AES_BLOCK_SIZE);
-	set_shm(&out_shm,TEE_AES_BLOCK_SIZE);
 	copy_shm(&in_shm,inBuf,inBufSize);
 
 	op.params[0].value.a = (uintptr_t)encOp;

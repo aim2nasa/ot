@@ -3,7 +3,8 @@
 #include <string.h>
 #include <assert.h>
 #include <okey.h>
-#include <tee_api_defines.h>
+
+#define TEE_ATTR_SECRET_VALUE               0xC0000000
 
 int print(const char *format,...)
 {

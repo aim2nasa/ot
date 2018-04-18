@@ -301,6 +301,30 @@ TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t
 	return TEEC_InvokeCommand(o->session,TA_CIPHER_UPDATE_CMD,&op,&o->error);
 }
 
+TEEC_Result cipherDoFinal(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t inBufSize)
+{
+	if((inBufSize%TEE_AES_BLOCK_SIZE)!=0)
+		return TEE_ERROR_NOT_SUPPORTED; 
+
+	if(inBufSize>o->shMemSize)
+		return TEE_ERROR_BAD_PARAMETERS;
+
+        TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	copy_shm(&in_shm,inBuf,inBufSize);
+
+	op.params[0].value.a = (uintptr_t)encOp;
+	op.params[1].memref.parent = &in_shm;
+	op.params[1].memref.size = o->shMemSize;
+	op.params[2].memref.parent = &out_shm;
+	op.params[2].memref.size = o->shMemSize;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,
+					 TEEC_MEMREF_PARTIAL_INPUT,
+					 TEEC_MEMREF_PARTIAL_OUTPUT,
+					 TEEC_NONE);
+	return TEEC_InvokeCommand(o->session,TA_CIPHER_DO_FINAL_CMD,&op,&o->error);
+}
+
 TEEC_SharedMemory *outSharedMemory()
 {
 	return &out_shm;

@@ -10,6 +10,11 @@
 
 TEEC_UUID uuid = TA_KEYGEN_UUID;
 
+typedef enum {
+        MODE_ENCRYPT = 0,
+        MODE_DECRYPT = 1,
+} OperationMode;
+
 static TEEC_SharedMemory in_shm={
         .flags = TEEC_MEM_INPUT | TEEC_MEM_OUTPUT
 };
@@ -217,13 +222,13 @@ int keyFreeEnumObjectList(eObjList *list)
 	return nCount;
 }
 
-TEEC_Result keyAllocOper(okey *o,bool bEnc,size_t keySize,TEE_OperationHandle *encOp)
+TEEC_Result keyAllocOper(okey *o,bool bEnc,size_t keySize,OperationHandle *encOp)
 {
 	TEEC_Result res;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
 	op.params[1].value.a = TEE_ALG_AES_ECB_NOPAD;	//does not require IV
-	op.params[2].value.a = bEnc?TEE_MODE_ENCRYPT:TEE_MODE_DECRYPT;
+	op.params[2].value.a = bEnc?MODE_ENCRYPT:MODE_DECRYPT;
 	op.params[3].value.a = keySize;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_OUTPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT);
 
@@ -232,7 +237,7 @@ TEEC_Result keyAllocOper(okey *o,bool bEnc,size_t keySize,TEE_OperationHandle *e
 	return res;
 }
 
-TEEC_Result keyFreeOper(okey *o,TEE_OperationHandle encOp)
+TEEC_Result keyFreeOper(okey *o,OperationHandle encOp)
 {
         TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
@@ -241,7 +246,7 @@ TEEC_Result keyFreeOper(okey *o,TEE_OperationHandle encOp)
 	return TEEC_InvokeCommand(o->session,TA_KEY_FREE_OPER_CMD,&op,&o->error);
 }       
 
-TEEC_Result keySetkeyOper(okey *o,TEE_OperationHandle encOp,uint32_t keyObj)
+TEEC_Result keySetkeyOper(okey *o,OperationHandle encOp,uint32_t keyObj)
 {
         TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
@@ -251,7 +256,7 @@ TEEC_Result keySetkeyOper(okey *o,TEE_OperationHandle encOp,uint32_t keyObj)
         return TEEC_InvokeCommand(o->session,TA_KEY_SETKEY_OPER_CMD,&op,&o->error);
 }
 
-TEEC_Result cipherInit(okey *o,TEE_OperationHandle encOp,uint8_t shMemFactor)
+TEEC_Result cipherInit(okey *o,OperationHandle encOp,uint8_t shMemFactor)
 {
 	if(shMemFactor==0) return TEE_ERROR_BAD_PARAMETERS;
 
@@ -277,7 +282,7 @@ cleanup1:
 	return res;
 }
 
-TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t inBufSize)
+TEEC_Result cipherUpdate(okey *o,OperationHandle encOp,uint8_t *inBuf,size_t inBufSize)
 {
 	if((inBufSize%TEE_AES_BLOCK_SIZE)!=0)
 		return TEE_ERROR_NOT_SUPPORTED; 
@@ -301,7 +306,7 @@ TEEC_Result cipherUpdate(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t
 	return TEEC_InvokeCommand(o->session,TA_CIPHER_UPDATE_CMD,&op,&o->error);
 }
 
-TEEC_Result cipherDoFinal(okey *o,TEE_OperationHandle encOp,uint8_t *inBuf,size_t inBufSize)
+TEEC_Result cipherDoFinal(okey *o,OperationHandle encOp,uint8_t *inBuf,size_t inBufSize)
 {
 	if((inBufSize%TEE_AES_BLOCK_SIZE)!=0)
 		return TEE_ERROR_NOT_SUPPORTED; 

@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	uint32_t keyObj=0;
 	FILE *fp,*out_fp;
 	size_t nSize,keySize=256;
-	TEE_OperationHandle encOp;
+	OperationHandle encOp;
 	bool bEnc = true;
 	struct stat inpFileStat;
 	okey o;

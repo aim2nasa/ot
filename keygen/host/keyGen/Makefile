@@ -2,7 +2,7 @@ CC      = $(CROSS_COMPILE)gcc
 
 OBJS = main.o
 
-CFLAGS += -Wall -I../../ta/include -I$(TEEC_EXPORT)/include -I$(OKEY_ROOT)
+CFLAGS += -Wall -I$(TEEC_EXPORT)/include -I$(OKEY_ROOT)
 LDADD += -lteec -L$(TEEC_EXPORT)/lib -lokey -L$(OKEY_ROOT)
 
 BINARY = keygen 

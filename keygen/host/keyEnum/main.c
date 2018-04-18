@@ -3,6 +3,8 @@
 #include <string.h>
 #include <okey.h>
 
+#define TEE_OBJECT_ID_MAX_LEN              64
+
 int print(const char *format,...)
 {
 #ifdef DEBUG

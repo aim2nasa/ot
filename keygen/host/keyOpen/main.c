@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 	if(res!=TEEC_SUCCESS)
 		errx(1,"keyOpen failed with code 0x%x origin 0x%x",res,o.error);
 	
-	printf("file open successful:%s,handle:%u\n",key_filename,keyObj);
+	printf("file open successful:%s,handle:0x%x\n",key_filename,keyObj);
 	
 	print("finalizeContext...\n");
 	finalizeContext(&o);

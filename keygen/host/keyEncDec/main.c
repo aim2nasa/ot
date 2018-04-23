@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 	bool bEnc = true;
 	struct stat inpFileStat;
 	okey o;
+	uint32_t flags;
 
 	if(argc>4){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -64,12 +65,13 @@ int main(int argc, char *argv[])
 	}
 
 	//Open persistent key object
-	res = keyOpen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,&keyObj);
+	flags = TEE_DATA_FLAG_ACCESS_READ|TEE_DATA_FLAG_SHARE_READ;
+	res = keyOpen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,flags,&keyObj);
 	if(res!=TEEC_SUCCESS){
-		printf("keyOpen failed with code 0x%x origin 0x%x\n",res,o.error);
+		printf("keyOpen failed with code 0x%x origin 0x%x flags:0x%x\n",res,o.error,flags);
 		goto cleanup3;
 	}
-	printf("key obtained:%s,handle:0x%x\n",key_filename,keyObj);
+	printf("key obtained:%s,handle:0x%x flags:0x%x\n",key_filename,keyObj,flags);
 
 	//Allocate operation
 	res = keyAllocOper(&o,bEnc,keySize,&encOp);

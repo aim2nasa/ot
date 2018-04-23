@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
 	uint8_t key_filename[256]={ 0 };
 	okey o;
 	uint32_t keyObj=0;
+	uint32_t flags;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -44,11 +45,12 @@ int main(int argc, char *argv[])
 		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
 	print("openSession ok\n");
 
-	res = keyOpen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,&keyObj);
+	flags = TEE_DATA_FLAG_ACCESS_READ|TEE_DATA_FLAG_SHARE_READ;
+	res = keyOpen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,flags,&keyObj);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"keyOpen failed with code 0x%x origin 0x%x",res,o.error);
+		errx(1,"keyOpen failed with code 0x%x origin 0x%x flags:0x%x",res,o.error,flags);
 	
-	printf("file open successful:%s,handle:0x%x\n",key_filename,keyObj);
+	printf("file open successful:%s,handle:0x%x flags:0x%x\n",key_filename,keyObj,flags);
 
 	res = keyUnlink(&o,keyObj);
 	if(res!=TEEC_SUCCESS)

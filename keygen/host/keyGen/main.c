@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 	TEEC_Result res;
 	uint8_t key_filename[256]={ 0 };
 	okey o;
+	uint32_t flags;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -43,10 +44,11 @@ int main(int argc, char *argv[])
 		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
 	print("openSession ok\n");
 
-	res = keyGen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename);
+	flags = TEE_DATA_FLAG_ACCESS_READ|TEE_DATA_FLAG_SHARE_READ;
+	res = keyGen(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,flags);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"keyGen failed with code 0x%x origin 0x%x",res,o.error);
-	printf("key generated in file:%s\n",key_filename);
+		errx(1,"keyGen failed with code 0x%x origin 0x%x flags:0x%x",res,o.error,flags);
+	printf("key generated in file:%s flags:0x%x\n",key_filename,flags);
 
 	print("finalizeContext...\n");
 	finalizeContext(&o);

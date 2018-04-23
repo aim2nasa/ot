@@ -3,8 +3,14 @@
 
 #include <tee_client_api.h>
 
-#define TEE_STORAGE_PRIVATE		0x00000001
-#define TEE_AES_BLOCK_SIZE             16UL
+#define TEE_STORAGE_PRIVATE			0x00000001
+#define TEE_AES_BLOCK_SIZE			16UL
+#define TEE_DATA_FLAG_ACCESS_READ		0x00000001
+#define TEE_DATA_FLAG_ACCESS_WRITE		0x00000002
+#define TEE_DATA_FLAG_ACCESS_WRITE_META		0x00000004
+#define TEE_DATA_FLAG_SHARE_READ		0x00000010
+#define TEE_DATA_FLAG_SHARE_WRITE		0x00000020
+#define TEE_DATA_FLAG_OVERWRITE			0x00000400
 
 typedef void* OperationHandle;
 
@@ -32,9 +38,9 @@ extern "C" {
 	TEEC_Result initializeContext(const char *name,okey *o);
 	TEEC_Result openSession(okey *o,uint32_t connectionMethod,
 				const void *connectionData,TEEC_Operation *operation);
-	TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName);
-	TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t *keyObj);
-	TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t *keyBuffer,size_t keySize);
+	TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t flags);
+	TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t flags,uint32_t *keyObj);
+	TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t *keyBuffer,size_t keySize,uint32_t flags);
 	TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,void *buffer,size_t *bufferSize);
 	TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList **list);
 	int keyFreeEnumObjectList(eObjList *list);

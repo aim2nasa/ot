@@ -116,19 +116,20 @@ void closeSession(okey *o)
 	free(o->session);
 }
 
-TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName)
+TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t flags)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
 	op.params[0].value.a = storageId;
 	op.params[1].tmpref.buffer = (char*)keyFileName;
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
+	op.params[2].value.a = flags;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_INPUT,TEEC_NONE);
 
 	return TEEC_InvokeCommand(o->session,TA_KEY_GEN_CMD,&op,&o->error);
 }
 
-TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t *keyObj)
+TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t flags,uint32_t *keyObj)
 {
 	TEEC_Result res;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
@@ -136,10 +137,11 @@ TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t 
 	op.params[0].value.a = storageId;
 	op.params[1].tmpref.buffer = (char*)keyFileName;
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_OUTPUT,TEEC_NONE);
+	op.params[2].value.a = flags;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_INPUT,TEEC_VALUE_OUTPUT);
 
 	res = TEEC_InvokeCommand(o->session,TA_KEY_OPEN_CMD,&op,&o->error);
-	if(res==TEEC_SUCCESS) *keyObj = op.params[2].value.a;
+	if(res==TEEC_SUCCESS) *keyObj = op.params[3].value.a;
 	return res;
 }
 
@@ -163,7 +165,7 @@ TEEC_Result keyUnlink(okey *o,uint32_t keyObj)
 	return TEEC_InvokeCommand(o->session,TA_KEY_UNLINK_CMD,&op,&o->error);
 }
 
-TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t *keyBuffer,size_t keySize)
+TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t *keyBuffer,size_t keySize,uint32_t flags)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
@@ -172,7 +174,8 @@ TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
 	op.params[2].tmpref.buffer = keyBuffer ;
 	op.params[2].tmpref.size = keySize;
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE);
+	op.params[3].value.a = flags;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_INPUT);
 
 	return TEEC_InvokeCommand(o->session,TA_KEY_INJECT_CMD,&op,&o->error);
 }

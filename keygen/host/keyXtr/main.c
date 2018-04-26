@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 			printf("fopen failure:%s\n",argv[2]);
 		}
 	}
-	printf("Obtained keySize=%zd\n",key_size);
+	printf("Obtained keySize=%zd bits(%zd bytes)\n",8*key_size,key_size);
 	for(i=0;i<key_size;i++) printf("%x ",key_buffer[i]);
 	printf("\n");
 	

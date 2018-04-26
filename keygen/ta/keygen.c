@@ -8,7 +8,7 @@ TEE_Result ta_key_gen_cmd(uint32_t param_types, TEE_Param params[4])
 	TEE_Result result = TEE_SUCCESS;
 	TEE_ObjectHandle transient_key = (TEE_ObjectHandle)NULL;
 	TEE_ObjectHandle persistent_key = (TEE_ObjectHandle)NULL;
-	size_t key_size = 256;
+	size_t key_size;
 	TEE_ObjectInfo keyInfo;
 	char *keyFileName = 0;
 	uint32_t flags;
@@ -16,7 +16,14 @@ TEE_Result ta_key_gen_cmd(uint32_t param_types, TEE_Param params[4])
 	(void)params;
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
 			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_MEMREF_INPUT,
-			  TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_NONE));
+			  TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_VALUE_INPUT));
+
+	key_size = params[3].value.a;
+	DMSG("received key size: %zd bits",key_size);
+	if(key_size!=128 && key_size!=192 && key_size!=256) {
+		DMSG("key size: %zd bits, it must be one of 128,192,256.Otherwise not supported",key_size);
+		return TEE_ERROR_NOT_SUPPORTED;
+	}
 
 	if((result=TEE_AllocateTransientObject(TEE_TYPE_AES,key_size,&transient_key))!=TEE_SUCCESS){
 		EMSG("Failed to Allocate transient object handle : 0x%x",result);

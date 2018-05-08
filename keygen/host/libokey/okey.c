@@ -116,11 +116,11 @@ void closeSession(okey *o)
 	free(o->session);
 }
 
-TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t flags,uint32_t keySize)
+TEEC_Result keyGen(okey *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t keySize)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
-	op.params[0].value.a = storageId;
+	op.params[0].value.a = sid;
 	op.params[1].tmpref.buffer = (char*)keyFileName;
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
 	op.params[2].value.a = flags;
@@ -130,12 +130,12 @@ TEEC_Result keyGen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t f
 	return TEEC_InvokeCommand(o->session,TA_KEY_GEN_CMD,&op,&o->error);
 }
 
-TEEC_Result keyOpen(okey *o,uint32_t storageId,const char *keyFileName,uint32_t flags,uint32_t *keyObj)
+TEEC_Result keyOpen(okey *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t *keyObj)
 {
 	TEEC_Result res;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
-	op.params[0].value.a = storageId;
+	op.params[0].value.a = sid;
 	op.params[1].tmpref.buffer = (char*)keyFileName;
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
 	op.params[2].value.a = flags;
@@ -166,11 +166,11 @@ TEEC_Result keyUnlink(okey *o,uint32_t keyObj)
 	return TEEC_InvokeCommand(o->session,TA_KEY_UNLINK_CMD,&op,&o->error);
 }
 
-TEEC_Result keyInject(okey *o,uint32_t storageId,const char *keyFileName,uint8_t *keyBuffer,size_t keySize,uint32_t flags)
+TEEC_Result keyInject(okey *o,storageId sid,const char *keyFileName,uint8_t *keyBuffer,size_t keySize,uint32_t flags)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
-	op.params[0].value.a = storageId;
+	op.params[0].value.a = sid;
 	op.params[1].tmpref.buffer = (char*)keyFileName;
 	op.params[1].tmpref.size = strlen((const char*)keyFileName);
 	op.params[2].tmpref.buffer = keyBuffer ;
@@ -202,7 +202,7 @@ TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,
         return res;
 }
 
-TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList **list)
+TEEC_Result keyEnumObjectList(okey *o,storageId sid,eObjList **list)
 {
 	TEEC_Result res;
 	uint32_t enumHandle;
@@ -217,7 +217,7 @@ TEEC_Result keyEnumObjectList(okey *o,uint32_t storageId,eObjList **list)
 	res = fs_alloc_enum(o->session,&enumHandle);
         if(res!=TEEC_SUCCESS) return res;
 
-	res = fs_start_enum(o->session,enumHandle,storageId);
+	res = fs_start_enum(o->session,enumHandle,sid);
         if(res!=TEEC_SUCCESS) return res;
 
 	memset((void*)info,0,sizeof(info));

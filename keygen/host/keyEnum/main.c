@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
 	print("openSession ok\n");
 
-	res = keyEnumObjectList(&o,TEE_STORAGE_PRIVATE,&list);
+	res = keyEnumObjectList(&o,private,&list);
         if(res!=TEEC_SUCCESS)
                 errx(1,"keyEnumObjectList failed with code 0x%x",res);
 

@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
                 TEE_DATA_FLAG_SHARE_READ        |
                 TEE_DATA_FLAG_ACCESS_WRITE      |
                 TEE_DATA_FLAG_SHARE_WRITE;
-	res = keyInject(&o,TEE_STORAGE_PRIVATE,(char*)key_filename,key_buffer,key_size,flags);
+	res = keyInject(&o,private,(char*)key_filename,key_buffer,key_size,flags);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"keyInject failed with code 0x%x origin 0x%x flags:0x%x",res,o.error,flags);
 

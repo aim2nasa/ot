@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
 	//Open persistent key object
         flags = TEE_DATA_FLAG_ACCESS_READ | TEE_DATA_FLAG_SHARE_READ; 
-	res = keyOpen(&o,private,(char*)key_filename,flags,&keyObj);
+	res = keyOpen(&o,PRIVATE,(char*)key_filename,flags,&keyObj);
 	if(res!=TEEC_SUCCESS){
 		printf("keyOpen failed with code 0x%x origin 0x%x flags:0x%x\n",res,o.error,flags);
 		goto cleanup3;

@@ -40,10 +40,10 @@ extern "C" {
 	} eObjList;
 
 	typedef enum {
-		private = TEE_STORAGE_PRIVATE,
-		ree = TEE_STORAGE_PRIVATE_REE,
-		rpmb = TEE_STORAGE_PRIVATE_RPMB,
-		sqlReserved = TEE_STORAGE_PRIVATE_SQL_RESERVED
+		PRIVATE = TEE_STORAGE_PRIVATE,
+		REE = TEE_STORAGE_PRIVATE_REE,
+		RPMB = TEE_STORAGE_PRIVATE_RPMB,
+		SQLRESERVED = TEE_STORAGE_PRIVATE_SQL_RESERVED
 	} storageId;
 
 	TEEC_Result initializeContext(const char *name,okey *o);

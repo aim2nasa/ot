@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
                 TEE_DATA_FLAG_SHARE_READ        |
                 TEE_DATA_FLAG_ACCESS_WRITE      |
                 TEE_DATA_FLAG_SHARE_WRITE;
-	res = keyOpen(&o,private,(char*)key_filename,flags,&keyObj);
+	res = keyOpen(&o,PRIVATE,(char*)key_filename,flags,&keyObj);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"keyOpen failed with code 0x%x origin 0x%x flags:0x%x",res,o.error,flags);
 	

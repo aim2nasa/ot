@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 		TEE_DATA_FLAG_SHARE_READ	|
 		TEE_DATA_FLAG_ACCESS_WRITE	|
 		TEE_DATA_FLAG_SHARE_WRITE;
-	res = keyGen(&o,private,(char*)key_filename,flags,keySize);
+	res = keyGen(&o,PRIVATE,(char*)key_filename,flags,keySize);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"keyGen failed with code 0x%x origin 0x%x flags:0x%x",res,o.error,flags);
 	printf("key generated in file:%s flags:0x%x keySize:%d\n",key_filename,flags,keySize);

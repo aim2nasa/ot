@@ -18,6 +18,7 @@ $(BINARY): $(OBJS)
 	cp okey.h include
 	cp libokey.so.1 lib
 	ln -s lib/libokey.so.1 lib/libokey.so
+	ln -s libokey.so.1 libokey.so
 
 okey.o : okey.c
 	@echo $@...

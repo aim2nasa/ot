@@ -13,7 +13,11 @@ all: $(BINARY)
 $(BINARY): $(OBJS)
 	@echo $@:$(OBJS)...
 	$(CC) -shared -Wl,-soname,$@ -o $@ $< $(LDADD)
-	ln -s libokey.so.1 libokey.so
+	mkdir lib
+	mkdir include
+	cp okey.h include
+	cp libokey.so.1 lib
+	ln -s lib/libokey.so.1 lib/libokey.so
 
 okey.o : okey.c
 	@echo $@...
@@ -26,3 +30,5 @@ enumHelper.o : enumHelper.c
 clean:
 	rm -f $(OBJS) $(BINARY)
 	rm -rf libokey*
+	rm -rf lib
+	rm -rf include

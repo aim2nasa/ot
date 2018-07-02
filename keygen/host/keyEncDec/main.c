@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	uint8_t buffer[TEE_AES_BLOCK_SIZE]={ 0 };
 	uint32_t keyObj=0;
 	FILE *fp,*out_fp;
-	size_t nSize,keySize=256;
+	size_t nSize;
 	OperationHandle encOp;
 	bool bEnc = true;
 	struct stat inpFileStat;
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	printf("key obtained:%s,handle:0x%x flags:0x%x\n",key_filename,keyObj,flags);
 
 	//Allocate operation
-	res = keyAllocOper(&o,bEnc,keySize,&encOp);
+	res = keyAllocOper(&o,bEnc,keyObj,&encOp);
 	if(res!=TEEC_SUCCESS){
 		printf("keyAllocOper failed with code 0x%x origin 0x%x\n",res,o.error);
 		goto cleanup3;

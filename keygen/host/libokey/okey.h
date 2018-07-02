@@ -55,7 +55,7 @@ extern "C" {
 	TEEC_Result keyGetObjectBufferAttribute(okey *o,uint32_t keyObj,uint32_t attrId,void *buffer,size_t *bufferSize);
 	TEEC_Result keyEnumObjectList(okey *o,storageId sid,eObjList **list);
 	int keyFreeEnumObjectList(eObjList *list);
-	TEEC_Result keyAllocOper(okey *o,bool bEnc,size_t keySize,OperationHandle *encOp);
+	TEEC_Result keyAllocOper(okey *o,bool bEnc,uint32_t keyObj,OperationHandle *encOp);
 	TEEC_Result keyFreeOper(okey *o,OperationHandle encOp);
 	TEEC_Result keySetkeyOper(okey *o,OperationHandle encOp,uint32_t keyObj);
 	TEEC_Result keyClose(okey *o,uint32_t keyObj);

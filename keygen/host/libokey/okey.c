@@ -270,14 +270,14 @@ int keyFreeEnumObjectList(eObjList *list)
 	return nCount;
 }
 
-TEEC_Result keyAllocOper(okey *o,bool bEnc,size_t keySize,OperationHandle *encOp)
+TEEC_Result keyAllocOper(okey *o,bool bEnc,uint32_t keyObj,OperationHandle *encOp)
 {
 	TEEC_Result res;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
 	op.params[1].value.a = TEE_ALG_AES_ECB_NOPAD;	//does not require IV
 	op.params[2].value.a = bEnc?MODE_ENCRYPT:MODE_DECRYPT;
-	op.params[3].value.a = keySize;
+	op.params[3].value.a = keyObj;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_OUTPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT);
 
 	res = TEEC_InvokeCommand(o->session,TA_KEY_ALLOC_OPER_CMD,&op,&o->error);

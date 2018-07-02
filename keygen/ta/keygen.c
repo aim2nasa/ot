@@ -208,14 +208,18 @@ TEE_Result ta_key_alloc_oper_cmd(uint32_t param_types, TEE_Param params[4])
 {
 	TEE_Result res;
 	TEE_OperationHandle op = TEE_HANDLE_NULL;
+	TEE_ObjectInfo keyInfo;
 
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
 			  (TEE_PARAM_TYPE_VALUE_OUTPUT, TEE_PARAM_TYPE_VALUE_INPUT,
 			   TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_VALUE_INPUT));
 
-	res = TEE_AllocateOperation(&op,params[1].value.a,params[2].value.a,params[3].value.a);
+	TEE_GetObjectInfo1(VAL2HANDLE(params[3].value.a),&keyInfo);
+	DMSG("GetObjectInfo1,keyInfo.maxObjectSize: %d",keyInfo.maxObjectSize);
+
+	res = TEE_AllocateOperation(&op,params[1].value.a,params[2].value.a,keyInfo.maxObjectSize);
 	params[0].value.a = (uintptr_t)op;
-	DMSG("allocate operation(%p)",(void*)(uintptr_t)params[0].value.a);
+	DMSG("allocate operation(%p) with key(%d bits)",(void*)(uintptr_t)params[0].value.a,keyInfo.maxObjectSize);
 	return res;
 }
 

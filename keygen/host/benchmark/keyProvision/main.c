@@ -88,27 +88,27 @@ int main(int argc, char *argv[])
 		printf("In a loop, stored key is opened and used for the init of cipher operation\n");
 		printf("After then opened key is closed(return its resource back to OS)\n");
 		printf("\nusage: kprov <keyfile in Trustzone>\n");
-		goto cleanup1;
+		return -1;
 	}
 
 	res = initializeContext(NULL,&o);
 	if(res!=TEEC_SUCCESS){
 		printf("initializeContext failed with code 0x%x\n",res);
-		goto cleanup1;
+		return -1;
 	}
 
 	res = openSession(&o,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS){
 		printf("openSession failed with code 0x%x origin 0x%x\n",res,o.error);
-		goto cleanup2;
+		finalizeContext(&o);
+		return -1;
 	}
 
 	keyProvision(&o,key_filename);
 
 	closeSession(&o);
-cleanup2:
 	finalizeContext(&o);
-cleanup1:
+
 	print("rk end\n");
 	return 0;
 }

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <okey.h>
 
 int print(const char *format,...)
@@ -75,6 +76,8 @@ int main(int argc, char *argv[])
 	TEEC_Result res;
 	uint8_t key_filename[256]={ 0 };
 	okey o;
+	struct timeval startTime,endTime;
+	long secs_used,micros_used;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -104,7 +107,17 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	gettimeofday(&startTime,NULL);
+	printf("start: %ld secs, %ld usecs\n",startTime.tv_sec,startTime.tv_usec);
+
 	keyProvision(&o,key_filename);
+
+	gettimeofday(&endTime,NULL);
+	printf("end: %ld secs, %ld usecs\n",endTime.tv_sec,endTime.tv_usec);
+
+	secs_used=(endTime.tv_sec - startTime.tv_sec);
+	micros_used= ((secs_used*1000000) + endTime.tv_usec) - (startTime.tv_usec);
+	printf("micros_used: %ld\n",micros_used);
 
 	closeSession(&o);
 	finalizeContext(&o);

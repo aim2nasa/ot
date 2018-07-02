@@ -18,3 +18,4 @@ keygen/host/keyEncDec/ked
 keygen/host/keyXtr/keyxtr
 keygen/host/keyInj/keyinj
 keygen/host/libokey/libokey.*
+keygen/host/benchmark/keyProvision/kprov

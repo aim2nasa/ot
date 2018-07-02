@@ -13,15 +13,68 @@ int print(const char *format,...)
 #endif
 }
 
+int keyProvision(okey *o,uint8_t *key_filename)
+{
+	TEEC_Result res;
+	uint32_t keyObj=0;
+	uint32_t flags;
+	OperationHandle encOp;
+
+        //Open persistent key object
+        flags = TEE_DATA_FLAG_ACCESS_READ | TEE_DATA_FLAG_SHARE_READ;
+        res = keyOpen(o,PRIVATE,(char*)key_filename,flags,&keyObj);
+        if(res!=TEEC_SUCCESS){
+                printf("keyOpen failed with code 0x%x origin 0x%x flags:0x%x\n",res,o->error,flags);
+		return -1;
+        }
+        printf("key obtained:%s,handle:0x%x flags:0x%x\n",key_filename,keyObj,flags);
+
+        //Allocate operation
+	//Note: In current implementation, keyAllocOper is hardcoded with TEE_ALG_AES_ECB_NOPAD
+        res = keyAllocOper(o,true,keyObj,&encOp); //true: encode mode
+        if(res!=TEEC_SUCCESS){
+                printf("keyAllocOper failed with code 0x%x origin 0x%x\n",res,o->error);
+		return -1;
+        }
+        printf("allocateOperation handle:%p\n",encOp);
+
+        //inject key for the allocated operation
+        res = keySetkeyOper(o,encOp,keyObj);
+        if(res!=TEEC_SUCCESS){
+                printf("keySetkeyOper failed with code 0x%x origin 0x%x\n",res,o->error);
+		return -1;
+        }
+        printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
+
+        res = cipherInit(o,encOp,1);
+        if(res!=TEEC_SUCCESS){
+                printf("cipherInit failed with code 0x%x origin 0x%x\n",res,o->error);
+		return -1;
+        }
+        printf("Cipher operation Initialized with %p\n",encOp);
+
+        //Free Allocated operation
+        res = keyFreeOper(o,encOp);
+        if(res!=TEEC_SUCCESS){
+                printf("keyFreeOper failed with code 0x%x origin 0x%x\n",res,o->error);
+		return -1;
+        }
+        printf("allocateOperation handle:%p freed\n",encOp);
+
+        //Close key
+        res = keyClose(o,keyObj);
+        if(res!=TEEC_SUCCESS){
+                printf("keyClose failed with code 0x%x origin 0x%x\n",res,o->error);
+		return -1;
+        }
+	return 0;
+}
+
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
 	uint8_t key_filename[256]={ 0 };
-	uint32_t keyObj=0;
-	OperationHandle encOp;
-	bool bEnc = true;
 	okey o;
-	uint32_t flags;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -50,54 +103,8 @@ int main(int argc, char *argv[])
 		goto cleanup2;
 	}
 
-	//Open persistent key object
-        flags = TEE_DATA_FLAG_ACCESS_READ | TEE_DATA_FLAG_SHARE_READ; 
-	res = keyOpen(&o,PRIVATE,(char*)key_filename,flags,&keyObj);
-	if(res!=TEEC_SUCCESS){
-		printf("keyOpen failed with code 0x%x origin 0x%x flags:0x%x\n",res,o.error,flags);
-		goto cleanup3;
-	}
-	printf("key obtained:%s,handle:0x%x flags:0x%x\n",key_filename,keyObj,flags);
+	keyProvision(&o,key_filename);
 
-	//Allocate operation
-	res = keyAllocOper(&o,bEnc,keyObj,&encOp);
-	if(res!=TEEC_SUCCESS){
-		printf("keyAllocOper failed with code 0x%x origin 0x%x\n",res,o.error);
-		goto cleanup3;
-	}
-	printf("allocateOperation handle:%p\n",encOp);
-
-	//inject key for the allocated operation
-	res = keySetkeyOper(&o,encOp,keyObj);
-	if(res!=TEEC_SUCCESS){
-		printf("keySetkeyOper failed with code 0x%x origin 0x%x\n",res,o.error);
-		goto cleanup3;
-	}
-	printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
-	
-	res = cipherInit(&o,encOp,1);
-	if(res!=TEEC_SUCCESS){
-		printf("cipherInit failed with code 0x%x origin 0x%x\n",res,o.error);
-		goto cleanup3;
-	}
-	printf("Cipher operation Initialized with %p\n",encOp);
-
-	//Free Allocated operation
-	res = keyFreeOper(&o,encOp);
-	if(res!=TEEC_SUCCESS){
-		printf("keyFreeOper failed with code 0x%x origin 0x%x\n",res,o.error);
-		goto cleanup3;
-	}
-	printf("allocateOperation handle:%p freed\n",encOp);
-	
-	//Close key
-	res = keyClose(&o,keyObj);
-	if(res!=TEEC_SUCCESS){
-		printf("keyClose failed with code 0x%x origin 0x%x\n",res,o.error);
-		goto cleanup3;
-	}
-
-cleanup3:
 	closeSession(&o);
 cleanup2:
 	finalizeContext(&o);

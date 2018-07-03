@@ -115,7 +115,12 @@ int main(int argc, char *argv[])
 	gettimeofday(&startTime,NULL);
 	print("start: %ld secs, %ld usecs\n",startTime.tv_sec,startTime.tv_usec);
 
-	keyProvision(&o,key_filename);
+	if(keyProvision(&o,key_filename)!=0) {
+                printf("error found in keyProvision\n");
+		closeSession(&o);
+		finalizeContext(&o);
+		return -1;
+	}
 
 	gettimeofday(&endTime,NULL);
 	print("end: %ld secs, %ld usecs\n",endTime.tv_sec,endTime.tv_usec);

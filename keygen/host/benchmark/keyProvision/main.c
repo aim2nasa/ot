@@ -14,6 +14,12 @@ int print(const char *format,...)
 #endif
 }
 
+long microSec(struct timeval *start,struct timeval *end)
+{
+	long secs_used=(end->tv_sec - start->tv_sec);
+	return (((secs_used*1000000) + end->tv_usec) - (start->tv_usec));
+}
+
 int keyProvision(okey *o,uint8_t *key_filename)
 {
 	TEEC_Result res;
@@ -77,7 +83,6 @@ int main(int argc, char *argv[])
 	uint8_t key_filename[256]={ 0 };
 	okey o;
 	struct timeval startTime,endTime;
-	long secs_used,micros_used;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))
@@ -115,9 +120,7 @@ int main(int argc, char *argv[])
 	gettimeofday(&endTime,NULL);
 	printf("end: %ld secs, %ld usecs\n",endTime.tv_sec,endTime.tv_usec);
 
-	secs_used=(endTime.tv_sec - startTime.tv_sec);
-	micros_used= ((secs_used*1000000) + endTime.tv_usec) - (startTime.tv_usec);
-	printf("micros_used: %ld\n",micros_used);
+	printf("elapsed time: %ld us\n",microSec(&startTime,&endTime));
 
 	closeSession(&o);
 	finalizeContext(&o);

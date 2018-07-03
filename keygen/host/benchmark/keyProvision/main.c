@@ -99,7 +99,8 @@ int main(int argc, char *argv[])
 		printf("Above process is defined as key provision in this test\n");
 		printf("In a loop, stored key is opened and used for the init of cipher operation\n");
 		printf("After then opened key is closed(return its resource back to OS)\n");
-		printf("\nusage: kprov <keyfile in Trustzone>\n");
+		printf("\nusage: kprov <keyfile in Trustzone> <loop>\n");
+		printf("\t loop: number of loop for key provision, if not specified, loop is 1\n");
 		return -1;
 	}
 

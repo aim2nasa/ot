@@ -34,7 +34,7 @@ int keyProvision(okey *o,uint8_t *key_filename)
                 printf("keyOpen failed with code 0x%x origin 0x%x flags:0x%x\n",res,o->error,flags);
 		return -1;
         }
-        printf("key obtained:%s,handle:0x%x flags:0x%x\n",key_filename,keyObj,flags);
+        print("key obtained:%s,handle:0x%x flags:0x%x\n",key_filename,keyObj,flags);
 
         //Allocate operation
 	//Note: In current implementation, keyAllocOper is hardcoded with TEE_ALG_AES_ECB_NOPAD
@@ -43,7 +43,7 @@ int keyProvision(okey *o,uint8_t *key_filename)
                 printf("keyAllocOper failed with code 0x%x origin 0x%x\n",res,o->error);
 		return -1;
         }
-        printf("allocateOperation handle:%p\n",encOp);
+        print("allocateOperation handle:%p\n",encOp);
 
         //inject key for the allocated operation
         res = keySetkeyOper(o,encOp,keyObj);
@@ -51,14 +51,14 @@ int keyProvision(okey *o,uint8_t *key_filename)
                 printf("keySetkeyOper failed with code 0x%x origin 0x%x\n",res,o->error);
 		return -1;
         }
-        printf("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
+        print("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
 
         res = cipherInit(o,encOp,1);
         if(res!=TEEC_SUCCESS){
                 printf("cipherInit failed with code 0x%x origin 0x%x\n",res,o->error);
 		return -1;
         }
-        printf("Cipher operation Initialized with %p\n",encOp);
+        print("Cipher operation Initialized with %p\n",encOp);
 
         //Free Allocated operation
         res = keyFreeOper(o,encOp);
@@ -66,7 +66,7 @@ int keyProvision(okey *o,uint8_t *key_filename)
                 printf("keyFreeOper failed with code 0x%x origin 0x%x\n",res,o->error);
 		return -1;
         }
-        printf("allocateOperation handle:%p freed\n",encOp);
+        print("allocateOperation handle:%p freed\n",encOp);
 
         //Close key
         res = keyClose(o,keyObj);
@@ -113,12 +113,12 @@ int main(int argc, char *argv[])
 	}
 
 	gettimeofday(&startTime,NULL);
-	printf("start: %ld secs, %ld usecs\n",startTime.tv_sec,startTime.tv_usec);
+	print("start: %ld secs, %ld usecs\n",startTime.tv_sec,startTime.tv_usec);
 
 	keyProvision(&o,key_filename);
 
 	gettimeofday(&endTime,NULL);
-	printf("end: %ld secs, %ld usecs\n",endTime.tv_sec,endTime.tv_usec);
+	print("end: %ld secs, %ld usecs\n",endTime.tv_sec,endTime.tv_usec);
 
 	printf("elapsed time: %ld us\n",microSec(&startTime,&endTime));
 

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <stdlib.h>
 #include <okey.h>
 
 int print(const char *format,...)
@@ -83,12 +84,15 @@ int main(int argc, char *argv[])
 	uint8_t key_filename[256]={ 0 };
 	okey o;
 	struct timeval startTime,endTime;
+	int i,loop=1;
 
 	if(argc>1){
 		if(strlen(argv[1])>=sizeof(key_filename))
 			errx(1,"key filename is over the buffer limit(%zd)\n",sizeof(key_filename));
 
 		memcpy(key_filename,argv[1],strlen(argv[1]));
+		if(argc>2) loop = atoi(argv[2]); 
+		printf("loop=%d\n",loop);
 	}else{
 		printf("Key Provision benchmark test\n");
 		printf("Measure how fast we can repeatedly load key and be ready for symmetric cipher operation\n");
@@ -115,11 +119,13 @@ int main(int argc, char *argv[])
 	gettimeofday(&startTime,NULL);
 	print("start: %ld secs, %ld usecs\n",startTime.tv_sec,startTime.tv_usec);
 
-	if(keyProvision(&o,key_filename)!=0) {
-                printf("error found in keyProvision\n");
-		closeSession(&o);
-		finalizeContext(&o);
-		return -1;
+	for(i=0;i<loop;i++) {
+		if(keyProvision(&o,key_filename)!=0) {
+               		printf("error found in keyProvision\n");
+			closeSession(&o);
+			finalizeContext(&o);
+			return -1;
+		}
 	}
 
 	gettimeofday(&endTime,NULL);

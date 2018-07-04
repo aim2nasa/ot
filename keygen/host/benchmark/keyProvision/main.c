@@ -54,12 +54,16 @@ int keyProvision(okey *o,uint8_t *key_filename)
         }
         print("setkey(0x%x) for operation(%p)\n",keyObj,encOp);
 
+	//If the following is uncommented, it can be endup TEE_ERROR_OUT_OF_MEMORY
+	//http://220.230.122.228/redmine/boards/317/topics/5263?r=5266#message-5266
+/*
         res = cipherInit(o,encOp,1);
         if(res!=TEEC_SUCCESS){
                 printf("cipherInit failed with code 0x%x origin 0x%x\n",res,o->error);
 		return -1;
         }
         print("Cipher operation Initialized with %p\n",encOp);
+*/
 
         //Free Allocated operation
         res = keyFreeOper(o,encOp);

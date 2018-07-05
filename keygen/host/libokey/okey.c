@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "enumHelper.h"
 #include <common.h>
+#include <stdio.h>
 
 #define TEEC_OPERATION_INITIALIZER      { 0 }
 
@@ -243,6 +244,8 @@ TEEC_Result keyEnumObjectList(okey *o,storageId sid,eObjList **list)
 		prev = objectList;
 		infoSize = sizeof(info);
 		idSize = sizeof(id);
+		printf(".");
+		fflush(stdout);
 	}
 
 	res = fs_free_enum(o->session,enumHandle);

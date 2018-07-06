@@ -20,3 +20,4 @@ keygen/host/keyInj/keyinj
 keygen/host/libokey/libokey.*
 keygen/host/benchmark/keyProvision/kprov
 keygen/host/benchmark/keyInjection/kinj
+keygen/host/benchmark/keyGeneration/kgen

@@ -43,22 +43,26 @@ TEE_Result ta_key_gen_cmd(uint32_t param_types, TEE_Param params[4])
 
 	DMSG("Input params[0], storage id: %d",params[0].value.a);
 
-	keyFileName = malloc(params[1].memref.size+1);
-	memcpy(keyFileName,params[1].memref.buffer,params[1].memref.size);
-	keyFileName[params[1].memref.size]=0;
-	DMSG("Input params[1], key filename: %s",keyFileName);
+	if(params[1].memref.size>0) {
+		keyFileName = malloc(params[1].memref.size+1);
+		memcpy(keyFileName,params[1].memref.buffer,params[1].memref.size);
+		keyFileName[params[1].memref.size]=0;
+		DMSG("Input params[1], key filename: %s",keyFileName);
 
-	flags = params[2].value.a;
-	DMSG("Input params[2], flags:0x%x",flags);
-	if((result=TEE_CreatePersistentObject(params[0].value.a,
-					      params[1].memref.buffer,params[1].memref.size,
-					      flags,transient_key,NULL,0,&persistent_key))!=TEE_SUCCESS){
-		EMSG("Failed to create a persistent key: 0x%x", result);
-		goto cleanup2;
+		flags = params[2].value.a;
+		DMSG("Input params[2], flags:0x%x",flags);
+		if((result=TEE_CreatePersistentObject(params[0].value.a,
+						      params[1].memref.buffer,params[1].memref.size,
+						      flags,transient_key,NULL,0,&persistent_key))!=TEE_SUCCESS){
+			EMSG("Failed to create a persistent key: 0x%x", result);
+			goto cleanup2;
+		}
+		DMSG("%s persistent object(%p) flags:0x%x created",keyFileName,(void*)persistent_key,flags);
+
+		TEE_CloseObject(persistent_key);
+	}else{
+		DMSG("persistent object can't be created, no object name specified");
 	}
-	DMSG("%s persistent object(%p) flags:0x%x created",keyFileName,(void*)persistent_key,flags);
-
-	TEE_CloseObject(persistent_key);
 cleanup2:
 	TEE_FreeTransientObject(transient_key);
 cleanup1:

@@ -9,11 +9,10 @@
 
 static long gCount = 0;
 
-int keyGeneration(okey *o,size_t key_size)
+int keyGeneration(okey *o,size_t key_size,int perObj)
 {
 	TEEC_Result res;
 	uint32_t flags;
-	uint8_t key_filename[256]={0};
 
         flags = TEE_DATA_FLAG_ACCESS_WRITE_META |
                 TEE_DATA_FLAG_ACCESS_READ       |
@@ -21,8 +20,13 @@ int keyGeneration(okey *o,size_t key_size)
                 TEE_DATA_FLAG_ACCESS_WRITE      |
                 TEE_DATA_FLAG_SHARE_WRITE;
 
-	sprintf((char*)key_filename,"%ld",gCount++);
-        res = keyGen(o,PRIVATE,(char*)key_filename,flags,key_size);
+	if(perObj==0)
+        	res = keyGen(o,PRIVATE,(char*)"",flags,key_size);
+	else{
+		uint8_t key_filename[256]={0};
+		sprintf((char*)key_filename,"%ld",gCount++);
+        	res = keyGen(o,PRIVATE,(char*)key_filename,flags,key_size);
+	}
         if(res!=TEEC_SUCCESS)
 		return -1;
 
@@ -34,7 +38,7 @@ int main(int argc, char *argv[])
 	TEEC_Result res;
 	okey o;
 	struct timeval startTime,endTime;
-	int i,loop=1;
+	int i,loop=1,perObj=1;
 	size_t keySize;
 
 	if(argc>1){
@@ -46,11 +50,14 @@ int main(int argc, char *argv[])
 		printf("keySize=%zd bits\n",keySize);
 		if(argc>2) loop = atoi(argv[2]); 
 		printf("loop=%d\n",loop);
+		if(argc>3) perObj = (atoi(argv[3])==0?0:1);
+		printf("perObj=%d\n",perObj);
 	}else{
 		printf("Key Generation benchmark test\n");
-		printf("\nusage: kgen <key size> <loop>\n");
+		printf("\nusage: kgen <key size> <loop> <perObj>\n");
 		printf("\t key size: size in bit,must be one of 128,192 or 256\n");
 		printf("\t loop: number of loop, if not specified, loop is 1\n");
+		printf("\t perObj: 0 not write key to storage, default is 1(i.e.write) (optional)\n"); 
 		return -1;
 	}
 
@@ -71,7 +78,7 @@ int main(int argc, char *argv[])
 	print("start: %ld secs, %ld usecs\n",startTime.tv_sec,startTime.tv_usec);
 
 	for(i=0;i<loop;i++) {
-		if(keyGeneration(&o,keySize)!=0) {
+		if(keyGeneration(&o,keySize,perObj)!=0) {
                		printf("error found in keyGeneration\n");
 			closeSession(&o);
 			finalizeContext(&o);

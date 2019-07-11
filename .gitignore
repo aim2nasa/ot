@@ -18,7 +18,10 @@ keygen/host/keyEncDec/ked
 keygen/host/keyXtr/keyxtr
 keygen/host/keyInj/keyinj
 keygen/host/libokey/libokey.*
+keygen/host/libokey/include/
+keygen/host/libokey/lib/
 keygen/host/benchmark/keyProvision/kprov
 keygen/host/benchmark/keyInjection/kinj
 keygen/host/benchmark/keyGeneration/kgen
 keygen/host/benchmark/keyExtraction/kxtr
+optee/3.6/toolchains/

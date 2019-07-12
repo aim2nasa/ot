@@ -16,6 +16,8 @@ all:
 	@echo TA_DEV_KIT_DIR=$(TA_DEV_KIT_DIR)
 	@echo OKEY_ROOT=$(OKEY_ROOT)
 
+	@cd optee/$(OPTEE_VERSION)/toolchains;make -f toolchain.mk
+
 	@cd hello;make
 	@cd keygen;make
 	@cd persistentObj;make

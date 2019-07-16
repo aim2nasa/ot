@@ -1,3 +1,4 @@
+OPTEE_VERSION=2.6
 ifeq ($(OPTEE_VERSION), )
 $(error OPTEE_VERSION is not set)
 endif

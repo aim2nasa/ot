@@ -15,5 +15,6 @@ cp keygen/ta/ab201cb2-177d-11e8-b642-0ed5f89f718b.ta /srv/nfs/linaro-stretch-dev
 cp persistentObj/host/persistentObj /srv/nfs/linaro-stretch-developer-20171109-88/root
 cp persistentObj/ta/cfe62966-04cb-11e8-ba89-0ed5f89f718b.ta /srv/nfs/linaro-stretch-developer-20171109-88/lib/optee_armtz
 
+cp storage/host/enumFiles/enumFiles /srv/nfs/linaro-stretch-developer-20171109-88/root
 cp storage/host/perObj/perObj /srv/nfs/linaro-stretch-developer-20171109-88/root
 cp storage/ta/b689f2a7-8adf-477a-9f99-32e90c0ad0a2.ta /srv/nfs/linaro-stretch-developer-20171109-88/lib/optee_armtz
